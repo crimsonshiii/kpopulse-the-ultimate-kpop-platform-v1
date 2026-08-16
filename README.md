@@ -1,11 +1,10 @@
-<div align="center">
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  # KPOPULSE: The Ultimate K-pop Platform you Love
+  This is a code bundle for KPOPULSE Web Application Pages. The original project is available at https://www.figma.com/design/GsJLNKBQK7QzN4qGV7uE8H/KPOPULSE-Web-Application-Pages.
 
-  <h1>Built with AI Studio</h2>
+  ## Running the code
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+  Run `npm i` to install the dependencies.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
-
-</div>
+  Run `npm run dev` to start the development server.
+  

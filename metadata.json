@@ -1,0 +1,6 @@
+{
+  "name": "KPOPULSE",
+  "description": "Connect with K-pop through artist profiles, comeback updates, music, news, events, and community features tailored for passionate fans.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
