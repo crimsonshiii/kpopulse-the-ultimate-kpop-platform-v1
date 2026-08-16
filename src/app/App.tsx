@@ -27,6 +27,13 @@ import {
   Settings,
   Menu,
   X,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Lock,
+  CheckCircle2,
+  KeyRound,
+  ShieldAlert,
 } from "lucide-react";
 import {
   type Screen,
@@ -37,6 +44,8 @@ import {
   type TrackItem,
   type DiscographyItem,
   type ScheduleItem,
+  type UserPersonalization,
+  type UserAccount,
   ARTISTS,
   COMEBACKS,
   NEWS,
@@ -51,7 +60,10 @@ import {
   DISCOVER_FILTERS,
   NEWS_FILTERS,
   TAB_TITLES,
+  DEFAULT_PERSONALIZATION,
+  DEFAULT_ACCOUNTS,
 } from "./data";
+import { PersonalizationScreen } from "./components/PersonalizationScreen";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -160,23 +172,250 @@ function SplashScreen({ onDone }: { onDone: () => void }) {
 
 // ─── LoginScreen ─────────────────────────────────────────────────────────────
 
-function LoginScreen({ onLogin }: { onLogin: () => void }) {
-  const [mode, setMode] = useState<"login" | "register">(
-    "login",
-  );
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+function LoginScreen({
+  accounts,
+  onLogin,
+  onRegister,
+}: {
+  accounts: UserAccount[];
+  onLogin: (account: UserAccount) => void;
+  onRegister: (account: UserAccount) => void;
+}) {
+  const [mode, setMode] = useState<"login" | "register">("login");
+  
+  // Login fields
+  const [loginIdentifier, setLoginIdentifier] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+
+  // Register fields
+  const [regUsername, setRegUsername] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regConfirmPassword, setRegConfirmPassword] = useState("");
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
+
+  // Feedback states
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorField, setErrorField] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [failedAttempts, setFailedAttempts] = useState(0);
+
+  const resetErrors = () => {
+    setErrorMessage(null);
+    setErrorField(null);
+    setSuccessMessage(null);
+  };
+
+  const handleModeChange = (newMode: "login" | "register") => {
+    setMode(newMode);
+    resetErrors();
+  };
+
+  const handleLoginSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    resetErrors();
+
+    const cleanIdentifier = loginIdentifier.trim();
+    if (!cleanIdentifier) {
+      setErrorMessage("Please enter your registered username or email.");
+      setErrorField("identifier");
+      return;
+    }
+
+    if (!loginPassword) {
+      setErrorMessage("Please enter your account password.");
+      setErrorField("password");
+      return;
+    }
+
+    // Lookup user in registered accounts database
+    const query = cleanIdentifier.toLowerCase();
+    const foundUser = accounts.find(
+      (a) =>
+        a.username.toLowerCase() === query || a.email.toLowerCase() === query
+    );
+
+    if (!foundUser) {
+      setErrorMessage(
+        `Account not found for "${cleanIdentifier}". Please check your spelling or register a new account.`
+      );
+      setErrorField("identifier");
+      setFailedAttempts((prev) => prev + 1);
+      return;
+    }
+
+    // Validate password
+    if (foundUser.password && foundUser.password !== loginPassword) {
+      setErrorMessage(
+        `Incorrect password for @${foundUser.username}. Please verify your credentials and try again.`
+      );
+      setErrorField("password");
+      setFailedAttempts((prev) => prev + 1);
+      return;
+    }
+
+    // Success
+    setSuccessMessage(`Welcome back, @${foundUser.username}!`);
+    setTimeout(() => {
+      onLogin(foundUser);
+    }, 250);
+  };
+
+  const handleRegisterSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    resetErrors();
+
+    const cleanUsername = regUsername.trim();
+    const cleanEmail = regEmail.trim();
+
+    // Username validation
+    if (!cleanUsername) {
+      setErrorMessage("Please provide a username.");
+      setErrorField("regUsername");
+      return;
+    }
+
+    if (cleanUsername.length < 3) {
+      setErrorMessage("Username must be at least 3 characters long.");
+      setErrorField("regUsername");
+      return;
+    }
+
+    if (!/^[a-zA-Z0-9_.-]+$/.test(cleanUsername)) {
+      setErrorMessage(
+        "Username can only contain letters, numbers, underscores, and hyphens."
+      );
+      setErrorField("regUsername");
+      return;
+    }
+
+    // Check if username is already taken
+    const usernameTaken = accounts.some(
+      (a) => a.username.toLowerCase() === cleanUsername.toLowerCase()
+    );
+    if (usernameTaken) {
+      setErrorMessage(
+        `The username "@${cleanUsername}" is already taken. Please choose another username.`
+      );
+      setErrorField("regUsername");
+      return;
+    }
+
+    // Email validation
+    if (!cleanEmail) {
+      setErrorMessage("Please enter your email address.");
+      setErrorField("regEmail");
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(cleanEmail)) {
+      setErrorMessage("Please enter a valid email address format (e.g. fan@kpopulse.com).");
+      setErrorField("regEmail");
+      return;
+    }
+
+    // Check if email already registered
+    const emailTaken = accounts.some(
+      (a) => a.email.toLowerCase() === cleanEmail.toLowerCase()
+    );
+    if (emailTaken) {
+      setErrorMessage(
+        `An account with email "${cleanEmail}" is already registered. Please sign in instead.`
+      );
+      setErrorField("regEmail");
+      return;
+    }
+
+    // Password validation
+    if (!regPassword) {
+      setErrorMessage("Please create a password for your account.");
+      setErrorField("regPassword");
+      return;
+    }
+
+    if (regPassword.length < 6) {
+      setErrorMessage("Password must be at least 6 characters long.");
+      setErrorField("regPassword");
+      return;
+    }
+
+    if (regPassword !== regConfirmPassword) {
+      setErrorMessage("Passwords do not match. Please verify and re-type.");
+      setErrorField("regConfirmPassword");
+      return;
+    }
+
+    // Create new account
+    const newAccount: UserAccount = {
+      id: `user_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      username: cleanUsername,
+      email: cleanEmail,
+      password: regPassword,
+      personalization: {
+        favoriteGroups: [],
+        favoriteSoloists: [],
+        favoriteGenres: [],
+        favoriteGenerations: [],
+        username: cleanUsername,
+        email: cleanEmail,
+      },
+      createdAt: new Date().toISOString(),
+    };
+
+    setSuccessMessage(`Account created successfully! Let's personalize your PULSE...`);
+    setTimeout(() => {
+      onRegister(newAccount);
+    }, 300);
+  };
+
+  const handleOAuth = (provider: string) => {
+    resetErrors();
+    const providerLower = provider.toLowerCase();
+    const defaultEmail = `${providerLower}.fan@kpopulse.com`;
+    const defaultUser = `${providerLower}_stan`;
+
+    // Check if already registered
+    const existing = accounts.find(
+      (a) =>
+        a.email.toLowerCase() === defaultEmail ||
+        a.username.toLowerCase() === defaultUser
+    );
+
+    if (existing) {
+      onLogin(existing);
+    } else {
+      const socialAccount: UserAccount = {
+        id: `user_${providerLower}_${Date.now()}`,
+        username: defaultUser,
+        email: defaultEmail,
+        password: "social_login_auth",
+        personalization: {
+          ...DEFAULT_PERSONALIZATION,
+          username: defaultUser,
+          email: defaultEmail,
+        },
+        createdAt: new Date().toISOString(),
+      };
+      onRegister(socialAccount);
+    }
+  };
+
+  const handleQuickFillDemo = (username: string, pass: string) => {
+    setMode("login");
+    setLoginIdentifier(username);
+    setLoginPassword(pass);
+    resetErrors();
+  };
 
   return (
     <div className="fixed inset-0 bg-background flex overflow-hidden z-50">
       {/* Left — brand / concert visual */}
       <div className="hidden md:flex flex-1 relative overflow-hidden">
         <img
-          src={unsplash(
-            "1516450360452-9312f5e86fc7",
-            1000,
-            1000,
-          )}
+          src={unsplash("1516450360452-9312f5e86fc7", 1000, 1000)}
           alt="Concert stage"
           className="w-full h-full object-cover"
         />
@@ -184,31 +423,30 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
         <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
         <div className="absolute inset-0 p-12 flex flex-col justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center">
-              <Zap
-                className="w-5 h-5 text-white"
-                fill="white"
-              />
+            <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30">
+              <Zap className="w-5 h-5 text-white" fill="white" />
             </div>
-            <span className="font-display text-xl font-black text-white">
+            <span className="font-display text-xl font-black text-white tracking-wider">
               KPO<span className="text-primary">PULSE</span>
             </span>
           </div>
           <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-white/80 text-xs font-semibold mb-4">
+              <KeyRound className="w-3.5 h-3.5 text-primary" />
+              Secure Account Authentication & Bias Sync
+            </div>
             <h2 className="font-display text-5xl font-black text-white leading-tight">
               The ultimate
               <br />
-              <span className="text-primary">
-                K-pop platform
-              </span>
+              <span className="text-primary">K-pop platform</span>
             </h2>
-            <p className="text-white/60 mt-4 text-base max-w-sm leading-relaxed">
-              Track comebacks, explore artists, discover new
-              music, and connect with fans worldwide.
+            <p className="text-white/70 mt-4 text-base max-w-sm leading-relaxed">
+              Track comebacks, explore artists, personalize your bias radar, and
+              sync preferences across your registered account.
             </p>
             <div className="flex gap-6 mt-8">
               {[
-                { n: "500K+", l: "Active Fans" },
+                { n: `${accounts.length}+`, l: "Registered Users" },
                 { n: "1,200+", l: "Artists" },
                 { n: "50K+", l: "Events" },
               ].map((s) => (
@@ -226,14 +464,11 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
       {/* Right — form */}
       <div className="w-full md:w-[480px] flex-shrink-0 flex flex-col justify-center overflow-y-auto bg-background">
-        <div className="px-10 py-12 w-full max-w-md mx-auto">
+        <div className="px-8 sm:px-10 py-10 w-full max-w-md mx-auto">
           {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-8 md:hidden">
+          <div className="flex items-center gap-2 mb-6 md:hidden">
             <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
-              <Zap
-                className="w-4 h-4 text-white"
-                fill="white"
-              />
+              <Zap className="w-4 h-4 text-white" fill="white" />
             </div>
             <span className="font-display text-lg font-black text-foreground">
               KPO<span className="text-primary">PULSE</span>
@@ -241,24 +476,24 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           </div>
 
           <h2 className="font-display text-3xl font-black text-foreground mb-1">
-            {mode === "login"
-              ? "Welcome back"
-              : "Join the fandom"}
+            {mode === "login" ? "Welcome back" : "Create Account"}
           </h2>
-          <p className="text-muted-foreground text-sm mb-8">
+          <p className="text-muted-foreground text-sm mb-6">
             {mode === "login"
-              ? "Sign in to your PULSE account"
-              : "Create your free account today"}
+              ? "Sign in with your registered account credentials"
+              : "Register to personalize your biases & track releases"}
           </p>
 
-          <div className="flex bg-card rounded-xl p-1 border border-border mb-6">
+          {/* Mode Switcher */}
+          <div className="flex bg-card rounded-xl p-1 border border-border mb-5">
             {(["login", "register"] as const).map((m) => (
               <button
                 key={m}
-                onClick={() => setMode(m)}
+                type="button"
+                onClick={() => handleModeChange(m)}
                 className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                   mode === m
-                    ? "bg-primary text-white"
+                    ? "bg-primary text-white shadow-md shadow-primary/20"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -267,81 +502,278 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
             ))}
           </div>
 
-          <div className="space-y-4">
-            {mode === "register" && (
+          {/* Error Banner with strict restriction alerts */}
+          {errorMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              className="mb-5 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 flex items-start gap-3 text-red-400"
+            >
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-500" />
+              <div className="flex-1 text-xs font-medium leading-relaxed">
+                <span className="font-bold text-red-300 block mb-0.5">
+                  Access Restriction
+                </span>
+                {errorMessage}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Success Banner */}
+          {successMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-5 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center gap-3 text-emerald-400"
+            >
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0 text-emerald-500" />
+              <span className="text-xs font-medium">{successMessage}</span>
+            </motion.div>
+          )}
+
+          {/* Form */}
+          {mode === "login" ? (
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
-                  Username
-                </p>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
+                  Username or Email
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={loginIdentifier}
+                    onChange={(e) => {
+                      setLoginIdentifier(e.target.value);
+                      if (errorField === "identifier") resetErrors();
+                    }}
+                    placeholder="kpop_luna or luna@kpopulse.com"
+                    autoComplete="username"
+                    className={`w-full bg-card border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-all ${
+                      errorField === "identifier"
+                        ? "border-red-500 ring-2 ring-red-500/20 bg-red-500/5"
+                        : "border-border focus:border-primary/50"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                    Password
+                  </label>
+                  <span className="text-[11px] text-muted-foreground/80">
+                    Case-sensitive
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? "text" : "password"}
+                    value={loginPassword}
+                    onChange={(e) => {
+                      setLoginPassword(e.target.value);
+                      if (errorField === "password") resetErrors();
+                    }}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    className={`w-full bg-card border rounded-xl pl-4 pr-11 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-all ${
+                      errorField === "password"
+                        ? "border-red-500 ring-2 ring-red-500/20 bg-red-500/5"
+                        : "border-border focus:border-primary/50"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword((p) => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                  >
+                    {showLoginPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {failedAttempts >= 2 && (
+                <div className="p-2.5 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center gap-2 text-yellow-400 text-xs">
+                  <ShieldAlert className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>
+                    Having trouble? Use one of the registered demo accounts below.
+                  </span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full bg-primary text-white py-3.5 rounded-xl font-semibold text-sm transition-all hover:bg-primary/90 active:scale-[0.99] mt-2 cursor-pointer shadow-lg shadow-primary/30"
+              >
+                Sign In to K-Pop Pulse
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
+              <div>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
+                  Choose Username
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold text-sm">
+                    @
+                  </span>
+                  <input
+                    type="text"
+                    value={regUsername}
+                    onChange={(e) => {
+                      setRegUsername(e.target.value.toLowerCase().replace(/\s+/g, "_"));
+                      if (errorField === "regUsername") resetErrors();
+                    }}
+                    placeholder="your_stan_name"
+                    className={`w-full bg-card border rounded-xl pl-8 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-all ${
+                      errorField === "regUsername"
+                        ? "border-red-500 ring-2 ring-red-500/20 bg-red-500/5"
+                        : "border-border focus:border-primary/50"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
+                  Email Address
+                </label>
                 <input
-                  type="text"
-                  placeholder="your_fanname"
-                  className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
+                  type="email"
+                  value={regEmail}
+                  onChange={(e) => {
+                    setRegEmail(e.target.value);
+                    if (errorField === "regEmail") resetErrors();
+                  }}
+                  placeholder="fan@kpopulse.com"
+                  className={`w-full bg-card border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-all ${
+                    errorField === "regEmail"
+                      ? "border-red-500 ring-2 ring-red-500/20 bg-red-500/5"
+                      : "border-border focus:border-primary/50"
+                  }`}
                 />
               </div>
-            )}
-            <div>
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
-                Email
-              </p>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="fan@kpopulse.com"
-                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
-              />
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
-                Password
-              </p>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary/50 transition-colors"
-              />
-            </div>
 
-            {mode === "login" && (
-              <div className="text-right">
-                <button className="text-xs text-primary font-semibold hover:underline">
-                  Forgot password?
-                </button>
+              <div>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
+                  Create Password (min. 6 chars)
+                </label>
+                <div className="relative">
+                  <input
+                    type={showRegPassword ? "text" : "password"}
+                    value={regPassword}
+                    onChange={(e) => {
+                      setRegPassword(e.target.value);
+                      if (errorField === "regPassword") resetErrors();
+                    }}
+                    placeholder="••••••••"
+                    className={`w-full bg-card border rounded-xl pl-4 pr-11 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-all ${
+                      errorField === "regPassword"
+                        ? "border-red-500 ring-2 ring-red-500/20 bg-red-500/5"
+                        : "border-border focus:border-primary/50"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegPassword((p) => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                  >
+                    {showRegPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
-            )}
 
-            <button
-              onClick={onLogin}
-              className="w-full bg-primary text-white py-3.5 rounded-xl font-semibold text-sm transition-all hover:bg-primary/90 active:scale-[0.99]"
-              style={{
-                boxShadow: "0 8px 32px rgba(255,28,142,0.35)",
-              }}
-            >
-              {mode === "login" ? "Sign In" : "Create Account"}
-            </button>
+              <div>
+                <label className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showRegConfirmPassword ? "text" : "password"}
+                    value={regConfirmPassword}
+                    onChange={(e) => {
+                      setRegConfirmPassword(e.target.value);
+                      if (errorField === "regConfirmPassword") resetErrors();
+                    }}
+                    placeholder="••••••••"
+                    className={`w-full bg-card border rounded-xl pl-4 pr-11 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none transition-all ${
+                      errorField === "regConfirmPassword"
+                        ? "border-red-500 ring-2 ring-red-500/20 bg-red-500/5"
+                        : "border-border focus:border-primary/50"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegConfirmPassword((p) => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1"
+                  >
+                    {showRegConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-border" />
-              <span className="text-xs text-muted-foreground">
-                or continue with
-              </span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
+              <button
+                type="submit"
+                className="w-full bg-primary text-white py-3.5 rounded-xl font-semibold text-sm transition-all hover:bg-primary/90 active:scale-[0.99] mt-2 cursor-pointer shadow-lg shadow-primary/30"
+              >
+                Register & Setup Bias Radar
+              </button>
+            </form>
+          )}
 
-            <div className="flex gap-3">
-              {["Google", "Apple"].map((p) => (
+          {/* Quick Demo Accounts for fast testing */}
+          <div className="mt-5 pt-4 border-t border-border">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2 text-center">
+              Quick Test Registered Accounts
+            </p>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {accounts.slice(0, 2).map((acc) => (
                 <button
-                  key={p}
-                  onClick={onLogin}
-                  className="flex-1 py-3 border border-border rounded-xl text-sm text-foreground font-semibold hover:bg-card/60 transition-colors"
+                  key={acc.id}
+                  type="button"
+                  onClick={() =>
+                    handleQuickFillDemo(acc.username, acc.password || "password123")
+                  }
+                  className="px-2.5 py-1 rounded-lg bg-secondary border border-border text-[11px] font-medium text-foreground hover:border-primary/40 hover:text-primary transition-colors flex items-center gap-1.5"
                 >
-                  {p}
+                  <Lock className="w-3 h-3 text-muted-foreground" />
+                  <span>@{acc.username}</span>
+                  <span className="text-[10px] text-muted-foreground">({acc.password})</span>
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-muted-foreground">or continue with</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+
+          <div className="flex gap-3">
+            {["Google", "Apple"].map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => handleOAuth(p)}
+                className="flex-1 py-2.5 border border-border rounded-xl text-sm text-foreground font-semibold hover:bg-card/60 transition-colors"
+              >
+                {p}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -368,11 +800,13 @@ function Sidebar({
   onTab,
   open,
   onClose,
+  personalization,
 }: {
   activeTab: Tab;
   onTab: (t: Tab) => void;
   open: boolean;
   onClose: () => void;
+  personalization: UserPersonalization;
 }) {
   const upcoming = COMEBACKS.filter(
     (c) => c.daysLeft > 0,
@@ -490,7 +924,13 @@ function Sidebar({
 
         {/* User */}
         <div className="flex-shrink-0 px-3 py-4 border-t border-border">
-          <div className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-secondary cursor-pointer transition-colors">
+          <div
+            onClick={() => {
+              onTab("profile");
+              onClose();
+            }}
+            className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-secondary cursor-pointer transition-colors"
+          >
             <img
               src={unsplash(
                 "1535713875002-d1ffd9b4a8bc",
@@ -502,10 +942,10 @@ function Sidebar({
             />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-foreground truncate">
-                kpop_luna
+                {personalization.username || "kpop_luna"}
               </p>
               <p className="text-[10px] text-muted-foreground truncate">
-                Super Fan
+                Super Fan · {personalization.favoriteGroups.length + personalization.favoriteSoloists.length} Following
               </p>
             </div>
             <Settings className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
@@ -598,15 +1038,39 @@ function PageHeader({
 function HomeTab({
   onArtist,
   onNews,
+  onManageArtists,
+  personalization,
 }: {
   onArtist: (a: Artist) => void;
   onNews: () => void;
+  onManageArtists: () => void;
+  personalization: UserPersonalization;
 }) {
   const [liked, setLiked] = useState<Set<number>>(new Set());
+
+  // Filter user's chosen artists from personalization
+  const followedArtists = ARTISTS.filter(
+    (a) =>
+      personalization.favoriteGroups.includes(a.name) ||
+      personalization.favoriteSoloists.includes(a.name)
+  );
+
+  const displayArtists = followedArtists.length > 0 ? followedArtists : ARTISTS.slice(0, 6);
+
+  // Prioritize favorite artist comebacks
+  const favoriteComeback = COMEBACKS.find(
+    (c) =>
+      c.daysLeft > 0 &&
+      (personalization.favoriteGroups.includes(c.artist) ||
+        personalization.favoriteSoloists.includes(c.artist))
+  );
+
   const featured =
+    favoriteComeback ??
     COMEBACKS.find((c) => c.daysLeft > 0 && ARTISTS.some((a) => a.name === c.artist)) ??
     COMEBACKS.find((c) => c.daysLeft > 0) ??
     COMEBACKS[0];
+
   const featuredArtist =
     ARTISTS.find((a) => a.name === featured.artist) ??
     ({ img: featured.img } as Artist);
@@ -631,7 +1095,7 @@ function HomeTab({
         <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-8">
           <div className="flex items-center gap-3">
             <span className="bg-primary text-white text-[10px] font-mono uppercase tracking-wider px-3 py-1 rounded-full">
-              Coming Soon
+              {favoriteComeback ? "⭐ Your Bias Comeback" : "Coming Soon"}
             </span>
             <span className="text-white/60 text-xs font-mono">
               {featured.date}
@@ -672,39 +1136,65 @@ function HomeTab({
           {/* My Artists */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-display text-sm font-black text-foreground uppercase tracking-wider">
-                My Artists
-              </h3>
-              <button className="text-xs text-primary font-semibold hover:underline">
+              <div className="flex items-center gap-2">
+                <h3 className="font-display text-sm font-black text-foreground uppercase tracking-wider">
+                  My Artists
+                </h3>
+                <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  {followedArtists.length}
+                </span>
+              </div>
+              <button
+                onClick={onManageArtists}
+                className="text-xs text-primary font-semibold hover:underline flex items-center gap-1"
+              >
                 Manage
               </button>
             </div>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-              {ARTISTS.map((a) => (
+
+            {followedArtists.length === 0 ? (
+              <div className="bg-card rounded-2xl border border-dashed border-border p-6 text-center">
+                <p className="text-sm font-semibold text-foreground mb-1">
+                  No favorite artists selected yet
+                </p>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Curate your K-pop pulse to track comebacks and alerts from your bias groups and soloists.
+                </p>
                 <button
-                  key={a.id}
-                  onClick={() => onArtist(a)}
-                  className="group flex flex-col items-center gap-2"
+                  onClick={onManageArtists}
+                  className="bg-primary text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors shadow-md"
                 >
-                  <div
-                    className="w-full aspect-square rounded-2xl overflow-hidden border-2 transition-transform group-hover:scale-105 group-active:scale-95"
-                    style={{
-                      borderColor: a.color,
-                      boxShadow: `0 0 0 2px ${a.color}20`,
-                    }}
-                  >
-                    <img
-                      src={unsplash(a.img, 120, 120)}
-                      alt={a.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground transition-colors">
-                    {a.name}
-                  </span>
+                  Personalize My Pulse ⚡
                 </button>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                {displayArtists.map((a) => (
+                  <button
+                    key={a.id}
+                    onClick={() => onArtist(a)}
+                    className="group flex flex-col items-center gap-2"
+                  >
+                    <div
+                      className="w-full aspect-square rounded-2xl overflow-hidden border-2 transition-transform group-hover:scale-105 group-active:scale-95"
+                      style={{
+                        borderColor: a.color,
+                        boxShadow: `0 0 0 2px ${a.color}20`,
+                      }}
+                    >
+                      <img
+                        src={unsplash(a.img, 120, 120)}
+                        alt={a.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground transition-colors truncate w-full text-center">
+                      {a.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Trending tracks */}
@@ -832,18 +1322,46 @@ function HomeTab({
 
 function DiscoverTab({
   onArtist,
+  personalization,
+  onToggleFollow,
 }: {
   onArtist: (a: Artist) => void;
+  personalization: UserPersonalization;
+  onToggleFollow: (artistName: string) => void;
 }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("All");
   const FILTERS = DISCOVER_FILTERS;
 
-  const results = ARTISTS.filter(
-    (a) =>
+  const results = ARTISTS.filter((a) => {
+    const matchesSearch =
       a.name.toLowerCase().includes(query.toLowerCase()) ||
-      a.genre.toLowerCase().includes(query.toLowerCase()),
-  );
+      a.genre.toLowerCase().includes(query.toLowerCase()) ||
+      a.label.toLowerCase().includes(query.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    if (filter === "All") return true;
+    if (filter === "⭐ My Favorites") {
+      return (
+        personalization.favoriteGroups.includes(a.name) ||
+        personalization.favoriteSoloists.includes(a.name)
+      );
+    }
+    if (filter === "Solo") return a.type === "solo";
+    if (filter === "Girl Group") {
+      const girlGroups = ["aespa", "BLACKPINK", "TWICE", "IVE", "LE SSERAFIM", "ITZY", "Red Velvet", "NMIXX", "STAYC", "BABYMONSTER", "ILLIT", "fromis_9", "KISS OF LIFE", "tripleS", "Hearts2Hearts"];
+      return a.type === "group" && girlGroups.includes(a.name);
+    }
+    if (filter === "Boy Group") {
+      const boyGroups = ["BTS", "Stray Kids", "TXT", "ENHYPEN", "SEVENTEEN", "TREASURE", "ATEEZ", "NCT 127", "ZEROBASEONE", "RIIZE", "BOYNEXTDOOR", "TWS", "SHINee", "EXO", "BIGBANG", "SUPER JUNIOR", "THE BOYZ", "PLAVE"];
+      return a.type === "group" && (boyGroups.includes(a.name) || !["aespa", "BLACKPINK", "TWICE", "IVE", "LE SSERAFIM", "ITZY", "Red Velvet"].includes(a.name));
+    }
+    if (filter === "2nd Gen" || filter === "3rd Gen" || filter === "4th Gen" || filter === "5th Gen") {
+      return a.generation === filter;
+    }
+    return true;
+  });
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
@@ -865,7 +1383,7 @@ function DiscoverTab({
               onClick={() => setFilter(f)}
               className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-xs font-semibold border transition-all ${
                 filter === f
-                  ? "bg-primary border-primary text-white"
+                  ? "bg-primary border-primary text-white shadow-md shadow-primary/20"
                   : "bg-card border-border text-muted-foreground hover:border-primary/40"
               }`}
             >
@@ -882,79 +1400,144 @@ function DiscoverTab({
           <span className="text-foreground font-semibold">
             {results.length}
           </span>{" "}
-          artists
+          artists {filter !== "All" && <span className="text-primary font-medium">({filter})</span>}
         </p>
       </div>
 
       {/* Artist grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {results.map((artist) => (
-          <motion.button
-            key={artist.id}
-            onClick={() => onArtist(artist)}
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.97 }}
-            className="bg-card rounded-2xl border border-border overflow-hidden text-left transition-shadow hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30"
-          >
-            <div className="relative h-44 overflow-hidden">
-              <img
-                src={unsplash(artist.img, 300, 250)}
-                alt={artist.name}
-                className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-              />
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `linear-gradient(to bottom, transparent 30%, ${artist.color}DD)`,
-                }}
-              />
-              {artist.verified && (
-                <div className="absolute top-2.5 right-2.5 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                  <BadgeCheck className="w-3.5 h-3.5 text-white" />
-                </div>
-              )}
-              <div className="absolute bottom-3 left-3">
-                <h4 className="font-display font-black text-base text-white leading-tight">
-                  {artist.name}
-                </h4>
-                <p className="text-white/70 text-[11px]">
-                  {artist.label}
-                </p>
-              </div>
-            </div>
-            <div className="p-3.5">
-              <p className="text-[11px] text-muted-foreground truncate">
-                {artist.genre}
-              </p>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-[11px] font-mono text-muted-foreground">
-                  {artist.fans} fans
-                </span>
-                <span
-                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: artist.color + "25",
-                    color: artist.accentColor,
-                  }}
+      {results.length === 0 ? (
+        <div className="bg-card rounded-2xl border border-border p-12 text-center max-w-md mx-auto my-8">
+          <Heart className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
+          <h3 className="font-display font-black text-lg text-foreground mb-1">
+            No artists found
+          </h3>
+          <p className="text-xs text-muted-foreground mb-4">
+            {filter === "⭐ My Favorites"
+              ? "You haven't followed any artists in this category yet. Explore all artists and tap the heart icon!"
+              : "Try adjusting your search query or filter."}
+          </p>
+          {filter === "⭐ My Favorites" && (
+            <button
+              onClick={() => setFilter("All")}
+              className="bg-primary text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors"
+            >
+              Browse All Artists
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {results.map((artist) => {
+            const isFollowed =
+              personalization.favoriteGroups.includes(artist.name) ||
+              personalization.favoriteSoloists.includes(artist.name);
+
+            return (
+              <motion.div
+                key={artist.id}
+                whileHover={{ y: -4 }}
+                className="relative bg-card rounded-2xl border border-border overflow-hidden text-left transition-shadow hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30 group"
+              >
+                <div
+                  onClick={() => onArtist(artist)}
+                  className="relative h-44 overflow-hidden cursor-pointer"
                 >
-                  {artist.members}M
-                </span>
-              </div>
-            </div>
-          </motion.button>
-        ))}
-      </div>
+                  <img
+                    src={unsplash(artist.img, 300, 250)}
+                    alt={artist.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(to bottom, transparent 30%, ${artist.color}DD)`,
+                    }}
+                  />
+                  {artist.verified && (
+                    <div className="absolute top-2.5 left-2.5 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-md">
+                      <BadgeCheck className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  )}
+                  <div className="absolute bottom-3 left-3 right-10">
+                    <h4 className="font-display font-black text-base text-white leading-tight truncate">
+                      {artist.name}
+                    </h4>
+                    <p className="text-white/70 text-[11px] truncate">
+                      {artist.label}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Heart / Follow Button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleFollow(artist.name);
+                  }}
+                  className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all ${
+                    isFollowed
+                      ? "bg-primary text-white shadow-lg shadow-primary/40 scale-105"
+                      : "bg-black/50 backdrop-blur-md text-white/80 hover:bg-black/80 hover:text-white"
+                  }`}
+                  title={isFollowed ? "Remove from Favorites" : "Add to Favorites"}
+                >
+                  <Heart
+                    className="w-3.5 h-3.5 transition-transform active:scale-125"
+                    fill={isFollowed ? "currentColor" : "none"}
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  />
+                </button>
+
+                <div className="p-3.5" onClick={() => onArtist(artist)}>
+                  <div className="flex items-center justify-between gap-1">
+                    <p className="text-[11px] text-muted-foreground truncate">
+                      {artist.genre}
+                    </p>
+                    {artist.generation && (
+                      <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-secondary text-muted-foreground">
+                        {artist.generation}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-[11px] font-mono text-muted-foreground">
+                      {artist.fans} fans
+                    </span>
+                    <span
+                      className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                      style={{
+                        backgroundColor: artist.color + "25",
+                        color: artist.accentColor,
+                      }}
+                    >
+                      {artist.members}M
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
 // ─── ArtistProfile ───────────────────────────────────────────────────────────
 
-function ArtistProfile({ artist }: { artist: Artist }) {
+function ArtistProfile({
+  artist,
+  isFollowing,
+  onToggleFollow,
+}: {
+  artist: Artist;
+  isFollowing: boolean;
+  onToggleFollow: () => void;
+}) {
   const [tab, setTab] = useState<
     "overview" | "disco" | "schedule"
   >("overview");
-  const [following, setFollowing] = useState(false);
 
   const discography = ARTIST_DISCOGRAPHIES[artist.name] || aespaDiscography;
   const SCHEDULE = DEFAULT_SCHEDULE;
@@ -1028,14 +1611,14 @@ function ArtistProfile({ artist }: { artist: Artist }) {
           {/* Actions */}
           <div className="flex gap-2">
             <button
-              onClick={() => setFollowing(!following)}
+              onClick={onToggleFollow}
               className={`flex-1 py-3 rounded-xl text-sm font-semibold transition-all ${
-                following
+                isFollowing
                   ? "border border-primary/50 text-primary bg-primary/10"
                   : "bg-primary text-white"
               }`}
               style={
-                following
+                isFollowing
                   ? {}
                   : {
                       boxShadow:
@@ -1043,7 +1626,7 @@ function ArtistProfile({ artist }: { artist: Artist }) {
                     }
               }
             >
-              {following ? "Following ✓" : "Follow"}
+              {isFollowing ? "Following ✓" : "Follow"}
             </button>
             <button className="flex-1 py-3 rounded-xl border border-border text-sm font-semibold text-foreground flex items-center justify-center gap-1.5 hover:border-primary/30 transition-colors">
               <Bell className="w-4 h-4" /> Notify
@@ -1242,158 +1825,209 @@ function ArtistProfile({ artist }: { artist: Artist }) {
 
 // ─── ComebacksTab ─────────────────────────────────────────────────────────────
 
-function ComebacksTab() {
-  const [filter, setFilter] = useState<"upcoming" | "recent">(
+function ComebacksTab({
+  personalization,
+  onArtist,
+}: {
+  personalization: UserPersonalization;
+  onArtist: (a: Artist) => void;
+}) {
+  const [filter, setFilter] = useState<"upcoming" | "recent" | "favorites">(
     "upcoming",
   );
+
+  const followedNames = new Set([
+    ...personalization.favoriteGroups,
+    ...personalization.favoriteSoloists,
+  ]);
+
+  const filteredComebacks = COMEBACKS.filter((c) => {
+    if (filter === "favorites") {
+      return followedNames.has(c.artist);
+    }
+    return filter === "upcoming" ? c.daysLeft > 0 : c.daysLeft <= 0;
+  });
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div className="flex bg-card rounded-xl p-1 border border-border">
-          {(["upcoming", "recent"] as const).map((f) => (
+          {(["upcoming", "recent", "favorites"] as const).map((f) => (
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className={`px-5 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
+              className={`px-4 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-semibold capitalize transition-all ${
                 filter === f
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-white shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              {f}
+              {f === "favorites" ? "⭐ My Bias" : f}
             </button>
           ))}
         </div>
         <p className="text-sm text-muted-foreground hidden sm:block">
-          {
-            COMEBACKS.filter((c) =>
-              filter === "upcoming"
-                ? c.daysLeft > 0
-                : c.daysLeft <= 0,
-            ).length
-          }{" "}
-          comebacks
+          {filteredComebacks.length} comebacks
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {COMEBACKS.filter((c) =>
-          filter === "upcoming"
-            ? c.daysLeft > 0
-            : c.daysLeft <= 0,
-        ).map((cb) => (
-          <div
-            key={cb.id}
-            className="bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all"
-          >
-            <div className="relative h-36 overflow-hidden">
-              <img
-                src={unsplash(cb.img, 600, 200)}
-                alt={cb.artist}
-                className="w-full h-full object-cover"
-              />
+      {filteredComebacks.length === 0 ? (
+        <div className="bg-card rounded-2xl border border-dashed border-border p-12 text-center max-w-md mx-auto my-8">
+          <Clock className="w-10 h-10 text-muted-foreground/40 mx-auto mb-3" />
+          <h3 className="font-display font-black text-lg text-foreground mb-1">
+            No comebacks found
+          </h3>
+          <p className="text-xs text-muted-foreground mb-4">
+            {filter === "favorites"
+              ? "None of your currently followed artists have scheduled upcoming releases."
+              : "No comebacks match this filter."}
+          </p>
+          {filter === "favorites" && (
+            <button
+              onClick={() => setFilter("upcoming")}
+              className="bg-primary text-white text-xs font-semibold px-4 py-2 rounded-xl hover:bg-primary/90 transition-colors"
+            >
+              View All Upcoming Comebacks
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {filteredComebacks.map((cb) => {
+            const isFollowed = followedNames.has(cb.artist);
+            const artistObj = ARTISTS.find((a) => a.name === cb.artist);
+
+            return (
               <div
-                className="absolute inset-0"
-                style={{
-                  background: `linear-gradient(to right, ${cb.color}CC, transparent 55%)`,
-                }}
-              />
-              <div className="absolute inset-0 p-4 flex flex-col justify-between">
-                <div className="flex gap-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider bg-black/50 text-white px-2 py-0.5 rounded-full">
-                    {cb.type}
-                  </span>
-                  {cb.teaser && (
-                    <span className="text-[10px] font-mono uppercase tracking-wider bg-primary/80 text-white px-2 py-0.5 rounded-full">
-                      Teaser Out
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <h3 className="font-display text-xl font-black text-white">
-                    {cb.title}
-                  </h3>
-                  <p className="text-white/70 text-xs">
-                    {cb.artist}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-xs font-semibold text-foreground">
-                    {cb.date}
-                  </span>
-                </div>
-                <div
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-                  style={{ backgroundColor: cb.color + "20" }}
-                >
-                  <Clock
-                    className="w-3 h-3"
-                    style={{ color: cb.color }}
+                key={cb.id}
+                className="bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all group"
+              >
+                <div className="relative h-36 overflow-hidden">
+                  <img
+                    src={unsplash(cb.img, 600, 200)}
+                    alt={cb.artist}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <span
-                    className="text-xs font-mono font-bold"
-                    style={{ color: cb.color }}
-                  >
-                    {cb.daysLeft > 0
-                      ? `${cb.daysLeft}d left`
-                      : "Released"}
-                  </span>
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(to right, ${cb.color}CC, transparent 55%)`,
+                    }}
+                  />
+                  <div className="absolute inset-0 p-4 flex flex-col justify-between">
+                    <div className="flex gap-2 items-center">
+                      <span className="text-[10px] font-mono uppercase tracking-wider bg-black/50 text-white px-2 py-0.5 rounded-full">
+                        {cb.type}
+                      </span>
+                      {cb.teaser && (
+                        <span className="text-[10px] font-mono uppercase tracking-wider bg-primary/80 text-white px-2 py-0.5 rounded-full">
+                          Teaser Out
+                        </span>
+                      )}
+                      {isFollowed && (
+                        <span className="text-[10px] font-mono uppercase tracking-wider bg-yellow-400/90 text-black font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                          ⭐ Following
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-display text-xl font-black text-white">
+                        {cb.title}
+                      </h3>
+                      <p
+                        onClick={() => artistObj && onArtist(artistObj)}
+                        className="text-white/80 text-xs font-semibold hover:underline cursor-pointer inline-block"
+                      >
+                        {cb.artist}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-              <div className="h-1.5 bg-secondary rounded-full overflow-hidden mb-3">
-                <div
-                  className="h-full rounded-full transition-all"
-                  style={{
-                    width:
-                      cb.daysLeft <= 0
-                        ? "100%"
-                        : `${Math.max(5, 100 - (cb.daysLeft / 50) * 100)}%`,
-                    backgroundColor: cb.color,
-                  }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
-                  {cb.tracks} tracks
-                </span>
-                <div className="flex gap-2">
-                  <button className="text-xs border border-border text-foreground px-3 py-1.5 rounded-lg font-semibold hover:bg-secondary transition-colors">
-                    Details
-                  </button>
-                  {cb.preorder ? (
-                    <button
-                      className="text-xs text-white px-3 py-1.5 rounded-lg font-semibold transition-opacity hover:opacity-80"
-                      style={{ backgroundColor: cb.color }}
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-xs font-semibold text-foreground">
+                        {cb.date}
+                      </span>
+                    </div>
+                    <div
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
+                      style={{ backgroundColor: cb.color + "20" }}
                     >
-                      Pre-order
-                    </button>
-                  ) : (
-                    <button className="text-xs text-primary border border-primary/30 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 hover:bg-primary/10 transition-colors">
-                      <Bell className="w-3 h-3" /> Notify
-                    </button>
-                  )}
+                      <Clock
+                        className="w-3 h-3"
+                        style={{ color: cb.color }}
+                      />
+                      <span
+                        className="text-xs font-mono font-bold"
+                        style={{ color: cb.color }}
+                      >
+                        {cb.daysLeft > 0
+                          ? `${cb.daysLeft}d left`
+                          : "Released"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="h-1.5 bg-secondary rounded-full overflow-hidden mb-3">
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width:
+                          cb.daysLeft <= 0
+                            ? "100%"
+                            : `${Math.max(5, 100 - (cb.daysLeft / 50) * 100)}%`,
+                        backgroundColor: cb.color,
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      {cb.tracks} tracks
+                    </span>
+                    <div className="flex gap-2">
+                      {artistObj && (
+                        <button
+                          onClick={() => onArtist(artistObj)}
+                          className="text-xs border border-border text-foreground px-3 py-1.5 rounded-lg font-semibold hover:bg-secondary transition-colors"
+                        >
+                          Artist
+                        </button>
+                      )}
+                      {cb.preorder ? (
+                        <button
+                          className="text-xs text-white px-3 py-1.5 rounded-lg font-semibold transition-opacity hover:opacity-80"
+                          style={{ backgroundColor: cb.color }}
+                        >
+                          Pre-order
+                        </button>
+                      ) : (
+                        <button className="text-xs text-primary border border-primary/30 px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 hover:bg-primary/10 transition-colors">
+                          <Bell className="w-3 h-3" /> Notify
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
 // ─── NewsTab — master-detail ──────────────────────────────────────────────────
 
-function NewsTab() {
+function NewsTab({
+  personalization,
+}: {
+  personalization: UserPersonalization;
+}) {
   const [activeFilter, setActiveFilter] = useState("All");
   const [selected, setSelected] = useState<NewsItem | null>(
     NEWS[0],
@@ -1401,10 +2035,29 @@ function NewsTab() {
   const [liked, setLiked] = useState(false);
   const [saved, setSaved] = useState(false);
   const FILTERS = NEWS_FILTERS;
-  const items =
-    activeFilter === "All"
-      ? NEWS
-      : NEWS.filter((n) => n.category === activeFilter);
+
+  const followedArtists = new Set([
+    ...personalization.favoriteGroups,
+    ...personalization.favoriteSoloists,
+  ]);
+
+  const items = NEWS.filter((n) => {
+    if (activeFilter === "All") return true;
+    if (activeFilter === "⭐ For You") {
+      const mentionsBias = Array.from(followedArtists).some(
+        (artist) =>
+          n.headline.toLowerCase().includes(artist.toLowerCase()) ||
+          n.body.toLowerCase().includes(artist.toLowerCase())
+      );
+      const matchesGenre = personalization.favoriteGenres.some(
+        (g) =>
+          n.headline.toLowerCase().includes(g.toLowerCase()) ||
+          n.body.toLowerCase().includes(g.toLowerCase())
+      );
+      return mentionsBias || matchesGenre || n.hot;
+    }
+    return n.category === activeFilter;
+  });
 
   const handleSelect = (item: NewsItem) => {
     setSelected(item);
@@ -1594,8 +2247,27 @@ function NewsTab() {
 
 // ─── ProfileTab ───────────────────────────────────────────────────────────────
 
-function ProfileTab({ onSignOut }: { onSignOut: () => void }) {
-  const STATS = PROFILE_STATS;
+function ProfileTab({
+  personalization,
+  onEditPreferences,
+  onSignOut,
+  onArtist,
+}: {
+  personalization: UserPersonalization;
+  onEditPreferences: () => void;
+  onSignOut: () => void;
+  onArtist: (a: Artist) => void;
+}) {
+  const followedCount =
+    personalization.favoriteGroups.length + personalization.favoriteSoloists.length;
+
+  const STATS = [
+    { label: "Following", value: String(followedCount) },
+    { label: "Fav Genres", value: String(personalization.favoriteGenres.length) },
+    { label: "Articles", value: "12" },
+    { label: "Level", value: "48" },
+  ];
+
   const NOTIFS = PROFILE_NOTIFS;
   const LINKS = [
     {
@@ -1611,6 +2283,12 @@ function ProfileTab({ onSignOut }: { onSignOut: () => void }) {
     },
     { Icon: Bookmark, label: "Saved Articles", badge: "12" },
   ];
+
+  const followedArtists = ARTISTS.filter(
+    (a) =>
+      personalization.favoriteGroups.includes(a.name) ||
+      personalization.favoriteSoloists.includes(a.name)
+  );
 
   return (
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
@@ -1639,15 +2317,18 @@ function ProfileTab({ onSignOut }: { onSignOut: () => void }) {
                   alt="Profile"
                   className="w-20 h-20 rounded-2xl object-cover ring-4 ring-card border-2 border-primary"
                 />
-                <button className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground border border-border px-3 py-1.5 rounded-lg hover:text-foreground hover:border-primary/40 transition-colors">
-                  <Settings className="w-3 h-3" /> Edit
+                <button
+                  onClick={onEditPreferences}
+                  className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground border border-border px-3 py-1.5 rounded-lg hover:text-foreground hover:border-primary/40 transition-colors"
+                >
+                  <Settings className="w-3 h-3" /> Edit Pulse
                 </button>
               </div>
               <h3 className="font-display font-black text-xl text-foreground">
-                kpop_luna
+                {personalization.username || "kpop_luna"}
               </h3>
               <p className="text-xs text-muted-foreground">
-                luna@kpopulse.com
+                {personalization.email || "luna@kpopulse.com"}
               </p>
               <div className="flex items-center gap-1.5 mt-2">
                 <Star
@@ -1655,7 +2336,7 @@ function ProfileTab({ onSignOut }: { onSignOut: () => void }) {
                   fill="currentColor"
                 />
                 <span className="text-xs text-yellow-400 font-semibold">
-                  Super Fan
+                  Super Fan · {personalization.favoriteGenerations.join(", ") || "All Generations"}
                 </span>
               </div>
               <div className="grid grid-cols-4 gap-3 mt-4 pt-4 border-t border-border">
@@ -1673,37 +2354,106 @@ function ProfileTab({ onSignOut }: { onSignOut: () => void }) {
             </div>
           </div>
 
-          {/* My Favorites */}
+          {/* My Favorites / Following */}
           <div className="bg-card rounded-2xl border border-border p-4">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
-                My Favorites
+              <div className="flex items-center gap-2">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                  My Favorites ({followedArtists.length})
+                </p>
+              </div>
+              <button
+                onClick={onEditPreferences}
+                className="text-xs text-primary font-semibold hover:underline"
+              >
+                Manage
+              </button>
+            </div>
+
+            {followedArtists.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">
+                No favorite artists selected yet.
               </p>
-              <button className="text-xs text-primary font-semibold hover:underline">
+            ) : (
+              <div className="grid grid-cols-4 gap-3">
+                {followedArtists.slice(0, 8).map((a) => (
+                  <div
+                    key={a.id}
+                    onClick={() => onArtist(a)}
+                    className="flex flex-col items-center gap-1.5 cursor-pointer group"
+                  >
+                    <div
+                      className="w-full aspect-square rounded-xl overflow-hidden border-2 transition-transform group-hover:scale-105"
+                      style={{ borderColor: a.color }}
+                    >
+                      <img
+                        src={unsplash(a.img, 80, 80)}
+                        alt={a.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <span className="text-[10px] text-muted-foreground text-center leading-tight truncate w-full group-hover:text-foreground">
+                      {a.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Pulse Preferences Card */}
+          <div className="bg-card rounded-2xl border border-border p-4">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                K-Pop Pulse Preferences
+              </p>
+              <button
+                onClick={onEditPreferences}
+                className="text-xs text-primary font-semibold hover:underline"
+              >
                 Edit
               </button>
             </div>
-            <div className="grid grid-cols-4 gap-3">
-              {ARTISTS.slice(0, 4).map((a) => (
-                <div
-                  key={a.id}
-                  className="flex flex-col items-center gap-1.5"
-                >
-                  <div
-                    className="w-full aspect-square rounded-xl overflow-hidden border-2"
-                    style={{ borderColor: a.color }}
-                  >
-                    <img
-                      src={unsplash(a.img, 80, 80)}
-                      alt={a.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="text-[10px] text-muted-foreground text-center leading-tight">
-                    {a.name}
-                  </span>
+            <div className="space-y-3">
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground mb-1.5">
+                  Favorite Genres
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {personalization.favoriteGenres.length > 0 ? (
+                    personalization.favoriteGenres.map((g) => (
+                      <span
+                        key={g}
+                        className="text-[10px] px-2.5 py-1 rounded-full bg-primary/10 text-primary font-semibold border border-primary/20"
+                      >
+                        {g}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs text-muted-foreground">All genres</span>
+                  )}
                 </div>
-              ))}
+              </div>
+
+              <div>
+                <p className="text-[11px] font-medium text-muted-foreground mb-1.5">
+                  Generations
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {personalization.favoriteGenerations.length > 0 ? (
+                    personalization.favoriteGenerations.map((gen) => (
+                      <span
+                        key={gen}
+                        className="text-[10px] px-2.5 py-1 rounded-full bg-secondary text-foreground font-semibold border border-border"
+                      >
+                        {gen}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs text-muted-foreground">All generations</span>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1740,7 +2490,7 @@ function ProfileTab({ onSignOut }: { onSignOut: () => void }) {
                 Notification Preferences
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Choose what alerts you want to receive
+                Choose what alerts you want to receive for followed artists
               </p>
             </div>
             {NOTIFS.map((item, i) => (
@@ -1862,32 +2612,210 @@ function BottomNav({
 export default function App() {
   const [screen, setScreen] = useState<Screen>("splash");
   const [activeTab, setActiveTab] = useState<Tab>("home");
-  const [selectedArtist, setSelectedArtist] =
-    useState<Artist | null>(null);
+  const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showPersonalizationModal, setShowPersonalizationModal] = useState(false);
+
+  // Registered accounts state
+  const [accounts, setAccounts] = useState<UserAccount[]>(() => {
+    try {
+      const saved = localStorage.getItem("kpopulse_registered_accounts");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return DEFAULT_ACCOUNTS;
+  });
+
+  // Active logged-in user state
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(() => {
+    try {
+      const savedAccounts = localStorage.getItem("kpopulse_registered_accounts");
+      const list: UserAccount[] = savedAccounts ? JSON.parse(savedAccounts) : DEFAULT_ACCOUNTS;
+      const activeId = localStorage.getItem("kpopulse_active_user_id");
+      if (activeId) {
+        const found = list.find((a) => a.id === activeId);
+        if (found) return found;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return null;
+  });
+
+  // Keep accounts synced to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem("kpopulse_registered_accounts", JSON.stringify(accounts));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [accounts]);
+
+  // Derived user personalization
+  const personalization: UserPersonalization =
+    currentUser?.personalization || DEFAULT_PERSONALIZATION;
+
+  // Helper to update current user personalization and sync to accounts list
+  const updatePersonalization = (updated: UserPersonalization) => {
+    if (currentUser) {
+      const updatedUser: UserAccount = {
+        ...currentUser,
+        personalization: updated,
+      };
+      setCurrentUser(updatedUser);
+      setAccounts((prev) =>
+        prev.map((acc) => (acc.id === updatedUser.id ? updatedUser : acc))
+      );
+    }
+    try {
+      localStorage.setItem(
+        "kpopulse_user_personalization",
+        JSON.stringify(updated)
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleTab = (tab: Tab) => {
     setActiveTab(tab);
     setSelectedArtist(null);
   };
 
-  if (screen === "splash")
+  const handleRegister = (newAccount: UserAccount) => {
+    setAccounts((prev) => {
+      const filtered = prev.filter((a) => a.id !== newAccount.id);
+      return [...filtered, newAccount];
+    });
+    setCurrentUser(newAccount);
+    try {
+      localStorage.setItem("kpopulse_active_user_id", newAccount.id);
+      localStorage.setItem(
+        "kpopulse_user_personalization",
+        JSON.stringify(newAccount.personalization)
+      );
+    } catch (e) {
+      console.error(e);
+    }
+    setScreen("onboarding");
+  };
+
+  const handleLogin = (account: UserAccount) => {
+    setCurrentUser(account);
+    try {
+      localStorage.setItem("kpopulse_active_user_id", account.id);
+      localStorage.setItem(
+        "kpopulse_user_personalization",
+        JSON.stringify(account.personalization)
+      );
+    } catch (e) {
+      console.error(e);
+    }
+    setScreen("main");
+  };
+
+  const handleOnboardingComplete = (updated: UserPersonalization) => {
+    updatePersonalization(updated);
+    setScreen("main");
+  };
+
+  const handleSignOut = () => {
+    setCurrentUser(null);
+    try {
+      localStorage.removeItem("kpopulse_active_user_id");
+    } catch (e) {
+      console.error(e);
+    }
+    setScreen("login");
+  };
+
+  const toggleFavoriteArtist = (artistName: string) => {
+    const artistObj = ARTISTS.find((a) => a.name === artistName);
+    const isSolo = artistObj?.type === "solo";
+
+    const currentPers = personalization;
+    let updatedPers: UserPersonalization;
+    if (isSolo) {
+      const has = currentPers.favoriteSoloists.includes(artistName);
+      updatedPers = {
+        ...currentPers,
+        favoriteSoloists: has
+          ? currentPers.favoriteSoloists.filter((n) => n !== artistName)
+          : [...currentPers.favoriteSoloists, artistName],
+      };
+    } else {
+      const has = currentPers.favoriteGroups.includes(artistName);
+      updatedPers = {
+        ...currentPers,
+        favoriteGroups: has
+          ? currentPers.favoriteGroups.filter((n) => n !== artistName)
+          : [...currentPers.favoriteGroups, artistName],
+      };
+    }
+    updatePersonalization(updatedPers);
+  };
+
+  if (screen === "splash") {
     return <SplashScreen onDone={() => setScreen("login")} />;
-  if (screen === "login")
-    return <LoginScreen onLogin={() => setScreen("main")} />;
+  }
+
+  if (screen === "login") {
+    return (
+      <LoginScreen
+        accounts={accounts}
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+      />
+    );
+  }
+
+  if (screen === "onboarding") {
+    return (
+      <PersonalizationScreen
+        personalization={personalization}
+        onComplete={handleOnboardingComplete}
+        onSkip={() => setScreen("main")}
+      />
+    );
+  }
 
   const pageTitle = selectedArtist
     ? selectedArtist.name
     : TAB_TITLES[activeTab];
 
+  const isSelectedArtistFollowed = selectedArtist
+    ? personalization.favoriteGroups.includes(selectedArtist.name) ||
+      personalization.favoriteSoloists.includes(selectedArtist.name)
+    : false;
+
   return (
     <div className="flex h-screen bg-background overflow-hidden">
+      {/* Personalization Modal when opened from dashboard "Manage" or profile "Edit Pulse" */}
+      {showPersonalizationModal && (
+        <PersonalizationScreen
+          personalization={personalization}
+          isModal
+          onComplete={(updated) => {
+            updatePersonalization(updated);
+            setShowPersonalizationModal(false);
+          }}
+          onSkip={() => setShowPersonalizationModal(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <Sidebar
         activeTab={activeTab}
         onTab={handleTab}
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        personalization={personalization}
       />
 
       {/* Main column */}
@@ -1901,28 +2829,54 @@ export default function App() {
 
         {/* Content */}
         <main
-          className={`flex-1 ${activeTab === "news" && !selectedArtist ? "flex flex-col overflow-hidden" : "overflow-y-auto scrollbar-hide"}`}
+          className={`flex-1 ${
+            activeTab === "news" && !selectedArtist
+              ? "flex flex-col overflow-hidden"
+              : "overflow-y-auto scrollbar-hide"
+          }`}
         >
           {selectedArtist ? (
             <div className="overflow-y-auto scrollbar-hide h-full">
-              <ArtistProfile artist={selectedArtist} />
+              <ArtistProfile
+                artist={selectedArtist}
+                isFollowing={isSelectedArtistFollowed}
+                onToggleFollow={() => toggleFavoriteArtist(selectedArtist.name)}
+              />
             </div>
           ) : (
             <>
               {activeTab === "home" && (
                 <HomeTab
                   onArtist={setSelectedArtist}
-                  onNews={() => {
-                    setActiveTab("news");
-                  }}
+                  onNews={() => setActiveTab("news")}
+                  onManageArtists={() => setShowPersonalizationModal(true)}
+                  personalization={personalization}
                 />
               )}
               {activeTab === "discover" && (
-                <DiscoverTab onArtist={setSelectedArtist} />
+                <DiscoverTab
+                  onArtist={setSelectedArtist}
+                  personalization={personalization}
+                  onToggleFollow={toggleFavoriteArtist}
+                />
               )}
-              {activeTab === "comebacks" && <ComebacksTab />}
-              {activeTab === "news" && <NewsTab />}
-              {activeTab === "profile" && <ProfileTab onSignOut={() => setScreen("login")} />}
+              {activeTab === "comebacks" && (
+                <ComebacksTab
+                  personalization={personalization}
+                  onArtist={setSelectedArtist}
+                />
+              )}
+              {activeTab === "news" && (
+                <NewsTab personalization={personalization} />
+              )}
+              {activeTab === "profile" && (
+                <ProfileTab
+                  personalization={personalization}
+                  onEditPreferences={() => setShowPersonalizationModal(true)}
+                  onSignOut={handleSignOut}
+                  onArtist={setSelectedArtist}
+                />
+              )}
             </>
           )}
         </main>

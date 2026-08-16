@@ -1,6 +1,6 @@
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-export type Screen = "splash" | "login" | "main";
+export type Screen = "splash" | "login" | "onboarding" | "main";
 export type Tab = "home" | "discover" | "comebacks" | "news" | "profile";
 
 export interface Artist {
@@ -10,6 +10,8 @@ export interface Artist {
   members: number;
   debut: string;
   genre: string;
+  type: "group" | "solo";
+  generation: "2nd" | "3rd" | "4th" | "5th";
   color: string;
   accentColor: string;
   img: string;
@@ -17,6 +19,42 @@ export interface Artist {
   verified: boolean;
   nextComeback: string;
   bio: string;
+}
+
+export interface GenreItem {
+  id: string;
+  name: string;
+  tagline: string;
+  icon: string;
+  color: string;
+  artists: string[];
+}
+
+export interface GenerationItem {
+  id: string;
+  name: string;
+  years: string;
+  tagline: string;
+  color: string;
+  highlights: string[];
+}
+
+export interface UserAccount {
+  id: string;
+  username: string;
+  email: string;
+  password?: string;
+  personalization: UserPersonalization;
+  createdAt: string;
+}
+
+export interface UserPersonalization {
+  favoriteGroups: string[];
+  favoriteSoloists: string[];
+  favoriteGenres: string[];
+  favoriteGenerations: string[];
+  username: string;
+  email: string;
 }
 
 export interface Comeback {
@@ -87,6 +125,7 @@ export interface AccountSettingItem {
 // ─── Artists Data ────────────────────────────────────────────────────────────
 
 export const ARTISTS: Artist[] = [
+  // ── Groups ──
   {
     id: 1,
     name: "aespa",
@@ -94,13 +133,15 @@ export const ARTISTS: Artist[] = [
     members: 4,
     debut: "2020",
     genre: "Synth-pop / Future Pop",
+    type: "group",
+    generation: "4th",
     color: "#8B5FFF",
     accentColor: "#C4A4FF",
     img: "asset/artistLogo/aespa - LEMONADE.webp",
     fans: "12.4M",
     verified: true,
     nextComeback: "May 2026",
-    bio: "aespa is a four-member girl group known for their unique concept blending the real world with a virtual dimension called ae-world. Their signature sound fuses hyper-pop with futuristic production and has redefined the visual language of K-pop.",
+    bio: "aespa is a four-member girl group known for their unique concept blending the real world with a virtual dimension called ae-world. Their signature sound fuses hyper-pop with futuristic production.",
   },
   {
     id: 2,
@@ -109,13 +150,15 @@ export const ARTISTS: Artist[] = [
     members: 10,
     debut: "2020",
     genre: "Hip-hop / Pop",
+    type: "group",
+    generation: "4th",
     color: "#00B4D8",
     accentColor: "#90E0EF",
     img: "asset/artistLogo/Treasure - New Wav.webp",
     fans: "9.8M",
     verified: true,
     nextComeback: "Nov 2024",
-    bio: "TREASURE is a 10-member boy group formed by YG Entertainment through YG Treasure Box. Known for their powerful choreography, energetic rap line, and high-energy hits like 'JIKJIN', 'DARARI', and 'BONA BONA'.",
+    bio: "TREASURE is a 10-member boy group formed by YG Entertainment through YG Treasure Box. Known for their energetic rap line, synchronized dance routines, and high-octane stage energy.",
   },
   {
     id: 3,
@@ -124,13 +167,15 @@ export const ARTISTS: Artist[] = [
     members: 13,
     debut: "2015",
     genre: "Performance / Hip-hop",
+    type: "group",
+    generation: "3rd",
     color: "#0099FF",
     accentColor: "#80CCFF",
     img: "1598387993441-a364f854c3e1",
     fans: "18.2M",
     verified: true,
     nextComeback: "Sep 2024",
-    bio: "SEVENTEEN is a 13-member group known as self-producing idols who actively participate in writing, composing, and choreographing their own music. Divided into vocal, hip-hop, and performance units.",
+    bio: "SEVENTEEN is a 13-member group known as self-producing idols who actively compose, write lyrics, and choreograph their own music.",
   },
   {
     id: 4,
@@ -139,13 +184,15 @@ export const ARTISTS: Artist[] = [
     members: 8,
     debut: "2018",
     genre: "K-Pop / Hip-hop / Rock",
+    type: "group",
+    generation: "4th",
     color: "#FF4500",
     accentColor: "#FF9070",
     img: "1524368535928-5b5e00ddc76b",
     fans: "15.6M",
     verified: true,
     nextComeback: "Dec 2024",
-    bio: "Stray Kids is an eight-member group formed through a reality survival show. Known for their intense performances, rock-influenced sound, and self-produced music through their sub-unit 3RACHA.",
+    bio: "Stray Kids is an eight-member group known for their intense self-produced sound via 3RACHA, rock-fueled drops, and global chart domination.",
   },
   {
     id: 5,
@@ -154,13 +201,15 @@ export const ARTISTS: Artist[] = [
     members: 6,
     debut: "2021",
     genre: "Dance-pop / Concept",
+    type: "group",
+    generation: "4th",
     color: "#00D4A0",
     accentColor: "#80EDD0",
     img: "1508700115892-45ecd05ae2ad",
     fans: "8.1M",
     verified: true,
     nextComeback: "Oct 2024",
-    bio: "IVE debuted with members from previous groups and quickly established themselves with their confident, mature concept. Their music explores themes of self-love, independence, and empowerment.",
+    bio: "IVE is a 6-member powerhouse girl group renowned for their self-love anthems, immaculate chic visuals, and record-breaking viral chart hits.",
   },
   {
     id: 6,
@@ -169,13 +218,15 @@ export const ARTISTS: Artist[] = [
     members: 9,
     debut: "2015",
     genre: "K-Pop / Dance-pop",
+    type: "group",
+    generation: "3rd",
     color: "#FF85C0",
     accentColor: "#FFC0DC",
     img: "1571019613454-1cb2f99b2d8b",
     fans: "22.7M",
     verified: true,
     nextComeback: "Jan 2025",
-    bio: "TWICE is one of K-pop's most successful girl groups, known for their positive energy, catchy melodies, and strong fanbase ONCE. They have broken numerous records and completed multiple world tours.",
+    bio: "TWICE is one of K-pop's most iconic girl groups, delivering beloved stadium anthems, irresistible hooks, and boundless charismatic energy.",
   },
   {
     id: 7,
@@ -184,13 +235,369 @@ export const ARTISTS: Artist[] = [
     members: 4,
     debut: "2023",
     genre: "R&B / Hip-hop / K-Pop",
+    type: "group",
+    generation: "5th",
     color: "#FF1744",
     accentColor: "#FF8A80",
     img: "asset/artistLogo/Kiss of Life - SWEAT.webp",
     fans: "3.5M",
     verified: true,
     nextComeback: "Aug 2026",
-    bio: "Kiss of Life is a four-member group under S2 Entertainment known for their distinctive 90s/2000s R&B vibe, vocal versatility, and confident stage presence. Members Julie, Natty, Belle, and Haneul each showcase standout musicality and self-expression.",
+    bio: "Kiss of Life is a four-member group known for their standout 90s/2000s R&B vibe, vocal acrobatics, and refreshing live performance power.",
+  },
+  {
+    id: 8,
+    name: "TXT",
+    label: "BIGHIT MUSIC",
+    members: 5,
+    debut: "2019",
+    genre: "Pop / Rock / Alternative",
+    type: "group",
+    generation: "4th",
+    color: "#FF6B9D",
+    accentColor: "#FFAAC8",
+    img: "1619983081563-430f63602796",
+    fans: "11.2M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "TOMORROW X TOGETHER tells universal youth stories through poetic lyrics, genre-bending rock-pop tracks, and fantastical concept worlds.",
+  },
+  {
+    id: 9,
+    name: "ENHYPEN",
+    label: "BELIFT LAB",
+    members: 7,
+    debut: "2020",
+    genre: "Dark Pop / Synthwave",
+    type: "group",
+    generation: "4th",
+    color: "#7B3FFF",
+    accentColor: "#B58CFF",
+    img: "1598387993441-a364f854c3e1",
+    fans: "10.4M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "ENHYPEN captivates global listeners with their dark cinematic storyline, vampire motifs, and hypnotic dance beats.",
+  },
+  {
+    id: 10,
+    name: "ZEROBASEONE",
+    label: "WAKEONE",
+    members: 9,
+    debut: "2023",
+    genre: "Pop / Dance / EDM",
+    type: "group",
+    generation: "5th",
+    color: "#00B4D8",
+    accentColor: "#70E0FF",
+    img: "1478737270239-2f02b77fc618",
+    fans: "4.9M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "Formed through Boys Planet, ZEROBASEONE brings bright youthful energy, emotional melodies, and dazzling group choreography.",
+  },
+  {
+    id: 11,
+    name: "BOYNEXTDOOR",
+    label: "KOZ Entertainment",
+    members: 6,
+    debut: "2023",
+    genre: "Hip-hop / Easy Listening",
+    type: "group",
+    generation: "5th",
+    color: "#FFB300",
+    accentColor: "#FFE082",
+    img: "1514525253161-7a46d19cd819",
+    fans: "3.8M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "BOYNEXTDOOR makes approachable, groovy, and relatable music produced alongside ZICO, telling relatable everyday stories.",
+  },
+  {
+    id: 12,
+    name: "Red Velvet",
+    label: "SM Entertainment",
+    members: 5,
+    debut: "2014",
+    genre: "R&B / Pop / Concept",
+    type: "group",
+    generation: "3rd",
+    color: "#FF5FA0",
+    accentColor: "#FFA6D2",
+    img: "1493225457124-a3eb161ffa5f",
+    fans: "14.1M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "Red Velvet showcases a dual concept: their bright, bubbly 'Red' side and their smooth, seductive R&B 'Velvet' side.",
+  },
+
+  // ── Soloists ──
+  {
+    id: 13,
+    name: "TAEMIN",
+    label: "BPM Entertainment",
+    members: 1,
+    debut: "2014",
+    genre: "Synth-pop / R&B / Performance",
+    type: "solo",
+    generation: "2nd",
+    color: "#5B8DB8",
+    accentColor: "#A2C5E5",
+    img: "1574169411535-1e7c8f9e1b74",
+    fans: "6.7M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "Known as the Idol's Idol, TAEMIN has redefined solo artistry with his theatrical, gender-defying performances and ethereal vocals.",
+  },
+  {
+    id: 14,
+    name: "Tiffany Young",
+    label: "Sublime",
+    members: 1,
+    debut: "2016",
+    genre: "Pop / Vocal / R&B",
+    type: "solo",
+    generation: "2nd",
+    color: "#FF8C69",
+    accentColor: "#FFBAA3",
+    img: "1493225457124-a3eb161ffa5f",
+    fans: "5.2M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "Legendary member of Girls' Generation who forged a bold international solo career marked by emotive vocal power and charismatic pop anthems.",
+  },
+  {
+    id: 15,
+    name: "DINO",
+    label: "PLEDIS Entertainment",
+    members: 1,
+    debut: "2023",
+    genre: "Hip-hop / Dance / Pop",
+    type: "solo",
+    generation: "3rd",
+    color: "#FF9800",
+    accentColor: "#FFC97A",
+    img: "1508700115892-45ecd05ae2ad",
+    fans: "3.9M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "SEVENTEEN's main dancer and all-rounder powerhouse exploring sharp hip-hop, energetic groove, and solo stage presence.",
+  },
+  {
+    id: 16,
+    name: "JUN. K",
+    label: "JYP Entertainment",
+    members: 1,
+    debut: "2011",
+    genre: "R&B / Soul / Ballad",
+    type: "solo",
+    generation: "2nd",
+    color: "#B06AB3",
+    accentColor: "#E2A9E5",
+    img: "1520637836993-5cce7b6b3b27",
+    fans: "2.8M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "2PM's main vocal and prolific singer-songwriter celebrated for his soulful vocal range, rich acoustics, and R&B arrangements.",
+  },
+  {
+    id: 17,
+    name: "MIYEON",
+    label: "Cube Entertainment",
+    members: 1,
+    debut: "2022",
+    genre: "Vocal / Ballad / Pop",
+    type: "solo",
+    generation: "4th",
+    color: "#7E57C2",
+    accentColor: "#B694EB",
+    img: "1619983081563-430f63602796",
+    fans: "4.1M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "(G)I-DLE's main vocal delivering sweet, crystalline melodies, romantic balladry, and enchanting acoustic stages.",
+  },
+  {
+    id: 18,
+    name: "JEONG EUNJI",
+    label: "IST Entertainment",
+    members: 1,
+    debut: "2016",
+    genre: "Ballad / Acoustic / Pop",
+    type: "solo",
+    generation: "2nd",
+    color: "#FF8A65",
+    accentColor: "#FFBDB0",
+    img: "1520637836993-5cce7b6b3b27",
+    fans: "3.4M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "Apink's legendary powerhouse vocal with heartwarming healing ballads, nostalgic acoustic songs, and commanding stage control.",
+  },
+  {
+    id: 19,
+    name: "DAWN",
+    label: "AT AREA",
+    members: 1,
+    debut: "2019",
+    genre: "Alternative Hip-hop / Indie Pop",
+    type: "solo",
+    generation: "3rd",
+    color: "#FF7043",
+    accentColor: "#FFAB91",
+    img: "1508700115892-45ecd05ae2ad",
+    fans: "2.6M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "Artistic trailblazer known for experimental sounds, poetic vulnerability, avant-garde visuals, and alternative hip-hop beats.",
+  },
+  {
+    id: 20,
+    name: "KIM JAE JOONG",
+    label: "iNKODE",
+    members: 1,
+    debut: "2003",
+    genre: "Rock / Power Ballad / Pop",
+    type: "solo",
+    generation: "2nd",
+    color: "#1A73E8",
+    accentColor: "#66A3FF",
+    img: "1524368535928-5b5e00ddc76b",
+    fans: "4.8M",
+    verified: true,
+    nextComeback: "Aug 2026",
+    bio: "Legendary 2nd Gen icon and vocalist renowned across Asia for his expressive rock timbre, piercing high notes, and enduring star power.",
+  },
+];
+
+// ─── Genres & Generations Datasets ──────────────────────────────────────────
+
+export const GENRES_LIST: GenreItem[] = [
+  {
+    id: "synth-pop",
+    name: "Synth-pop & Future Pop",
+    tagline: "Cyberpunk synths, hyperpop textures & futuristic drops",
+    icon: "Sparkles",
+    color: "#8B5FFF",
+    artists: ["aespa", "TAEMIN", "ENHYPEN"],
+  },
+  {
+    id: "hiphop-rap",
+    name: "Hip-hop & Hard Rap",
+    tagline: "808 heavy basslines, rapid flows & fierce cyphers",
+    icon: "Mic",
+    color: "#00B4D8",
+    artists: ["TREASURE", "Stray Kids", "BOYNEXTDOOR"],
+  },
+  {
+    id: "rnb-soul",
+    name: "R&B & Soul Grooves",
+    tagline: "Smooth 90s/00s vocal runs, velvet chords & sensual melodies",
+    icon: "Disc",
+    color: "#FF1744",
+    artists: ["Kiss of Life", "Red Velvet", "JUN. K"],
+  },
+  {
+    id: "dance-pop",
+    name: "Dance-pop & EDM Anthems",
+    tagline: "High-energy festival beats, addictive hooks & dance drops",
+    icon: "Flame",
+    color: "#FF1C8E",
+    artists: ["TWICE", "IVE", "ZEROBASEONE"],
+  },
+  {
+    id: "k-rock",
+    name: "K-Rock & Alternative",
+    tagline: "Live drums, guitar riffs, anthemic choruses & punk energy",
+    icon: "Guitar",
+    color: "#FF4500",
+    artists: ["Stray Kids", "TXT", "KIM JAE JOONG"],
+  },
+  {
+    id: "ballad-vocal",
+    name: "Power Ballads & Acoustic",
+    tagline: "Soul-stirring vocals, grand orchestrations & emotional lyrics",
+    icon: "Heart",
+    color: "#00D4A0",
+    artists: ["Tiffany Young", "JEONG EUNJI", "MIYEON"],
+  },
+  {
+    id: "performance",
+    name: "Concept & Performance",
+    tagline: "Complex synchronized choreo, theatrical stages & storylines",
+    icon: "Zap",
+    color: "#0099FF",
+    artists: ["SEVENTEEN", "TAEMIN", "ENHYPEN"],
+  },
+];
+
+export const GENERATIONS_LIST: GenerationItem[] = [
+  {
+    id: "2nd-gen",
+    name: "2nd Gen (2000–2011)",
+    years: "2000–2011",
+    tagline: "The Golden Era pioneers who sparked the global Hallyu wave",
+    color: "#F59E0B",
+    highlights: ["BIGBANG", "Girls' Generation", "TAEMIN (SHINee)", "JUN. K (2PM)", "KIM JAE JOONG", "JEONG EUNJI (Apink)"],
+  },
+  {
+    id: "3rd-gen",
+    name: "3rd Gen (2012–2017)",
+    years: "2012–2017",
+    tagline: "The Global Explosion era dominating world stadiums and streaming charts",
+    color: "#3B82F6",
+    highlights: ["TWICE", "SEVENTEEN", "Red Velvet", "NCT 127", "DINO", "DAWN"],
+  },
+  {
+    id: "4th-gen",
+    name: "4th Gen (2018–2022)",
+    years: "2018–2022",
+    tagline: "Self-producing masters, dark concepts and boundary-breaking visuals",
+    color: "#EC4899",
+    highlights: ["Stray Kids", "aespa", "TREASURE", "IVE", "TXT", "ENHYPEN", "MIYEON"],
+  },
+  {
+    id: "5th-gen",
+    name: "5th Gen (2023–Present)",
+    years: "2023–Present",
+    tagline: "The Next Wave of fresh R&B vibes, easy listening & dynamic rookie power",
+    color: "#10B981",
+    highlights: ["Kiss of Life", "ZEROBASEONE", "BOYNEXTDOOR", "TWS"],
+  },
+];
+
+export const DEFAULT_PERSONALIZATION: UserPersonalization = {
+  favoriteGroups: ["aespa", "TREASURE", "Kiss of Life", "SEVENTEEN", "Stray Kids", "IVE", "TWICE"],
+  favoriteSoloists: ["TAEMIN", "Tiffany Young"],
+  favoriteGenres: ["Synth-pop & Future Pop", "Hip-hop & Hard Rap", "R&B & Soul Grooves"],
+  favoriteGenerations: ["4th Gen (2018–2022)", "5th Gen (2023–Present)"],
+  username: "kpop_luna",
+  email: "luna@kpopulse.com",
+};
+
+export const DEFAULT_ACCOUNTS: UserAccount[] = [
+  {
+    id: "user_kpop_luna",
+    username: "kpop_luna",
+    email: "luna@kpopulse.com",
+    password: "password123",
+    personalization: { ...DEFAULT_PERSONALIZATION },
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+  {
+    id: "user_starlight",
+    username: "starlight_stan",
+    email: "starlight@kpopulse.com",
+    password: "password123",
+    personalization: {
+      favoriteGroups: ["Stray Kids", "TXT", "ENHYPEN"],
+      favoriteSoloists: ["TAEMIN", "DINO"],
+      favoriteGenres: ["Hip-hop & Hard Rap", "K-Rock & Alternative"],
+      favoriteGenerations: ["4th Gen (2018–2022)"],
+      username: "starlight_stan",
+      email: "starlight@kpopulse.com",
+    },
+    createdAt: "2026-02-15T00:00:00.000Z",
   },
 ];
 
@@ -694,14 +1101,19 @@ export const CATEGORY_STYLES: Record<string, string> = {
 
 export const DISCOVER_FILTERS = [
   "All",
+  "⭐ My Favorites",
   "Girl Group",
   "Boy Group",
   "Solo",
-  "Rookie",
+  "2nd Gen",
+  "3rd Gen",
+  "4th Gen",
+  "5th Gen",
 ];
 
 export const NEWS_FILTERS = [
   "All",
+  "⭐ For You",
   "Award",
   "Release",
   "Tour",
