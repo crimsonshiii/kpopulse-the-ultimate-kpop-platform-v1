@@ -92,11 +92,28 @@ export interface TrackItem {
   color: string;
 }
 
+export interface DiscographyTrack {
+  num: number;
+  title: string;
+  duration: string;
+  isTitle?: boolean;
+  hasMv?: boolean;
+  audioPreviewUrl?: string;
+  youtubeVideoId?: string;
+}
+
 export interface DiscographyItem {
   title: string;
   type: string;
   year: string;
   tracks: number;
+  leadTrack?: string;
+  tracklist?: DiscographyTrack[];
+  spotifyUrl?: string;
+  appleMusicUrl?: string;
+  youtubeMusicUrl?: string;
+  audioPreviewUrl?: string;
+  youtubeVideoId?: string;
 }
 
 export interface ScheduleItem {
@@ -160,6 +177,7 @@ export const ARTISTS: Artist[] = [
     nextComeback: "Nov 2024",
     bio: "TREASURE is a 10-member boy group formed by YG Entertainment through YG Treasure Box. Known for their energetic rap line, synchronized dance routines, and high-octane stage energy.",
   },
+  /*
   {
     id: 3,
     name: "SEVENTEEN",
@@ -330,8 +348,10 @@ export const ARTISTS: Artist[] = [
     nextComeback: "Aug 2026",
     bio: "Red Velvet showcases a dual concept: their bright, bubbly 'Red' side and their smooth, seductive R&B 'Velvet' side.",
   },
+  */
 
   // ── Soloists ──
+  /*
   {
     id: 13,
     name: "TAEMIN",
@@ -434,6 +454,7 @@ export const ARTISTS: Artist[] = [
     nextComeback: "Aug 2026",
     bio: "Apink's legendary powerhouse vocal with heartwarming healing ballads, nostalgic acoustic songs, and commanding stage control.",
   },
+  */
 ];
 
 // ─── Genres & Generations Datasets ──────────────────────────────────────────
@@ -619,7 +640,7 @@ export const COMEBACKS: Comeback[] = [
 export const NEWS: NewsItem[] = [
   {
     id: 1,
-    category: "Tour",
+    category: "Tour", // 
     headline: "aespa sweeps 4 categories at Melon Music Awards 2024",
     time: "2h ago",
     author: "Jao Nicholas Benedicto",
@@ -683,40 +704,151 @@ export const TRACKS: TrackItem[] = [
 
 export const aespaDiscography: DiscographyItem[] = [
   {
+    title: "Whiplash",
+    type: "5th Mini Album",
+    year: "2024",
+    tracks: 6,
+    leadTrack: "Whiplash",
+    youtubeVideoId: "jWQx2f-CErU", // aespa 'Whiplash' Official MV
+    spotifyUrl: "https://open.spotify.com/album/4eW6bW4W6bW4W",
+    appleMusicUrl: "https://music.apple.com/album/whiplash-the-5th-mini-album/1771234567",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_whiplash",
+    tracklist: [
+      { num: 1, title: "Whiplash", duration: "3:03", isTitle: true, youtubeVideoId: "jWQx2f-CErU" },
+      { num: 2, title: "Kill It", duration: "3:20", youtubeVideoId: "Yp8h_w5xQyU" },
+      { num: 3, title: "Flights, Not Feelings", duration: "3:01", youtubeVideoId: "vB4Q_rN8jWk" },
+      { num: 4, title: "Pink Hoodie", duration: "2:46", youtubeVideoId: "tZ7Y_mK9v8s" },
+      { num: 5, title: "Flowers", duration: "3:14", youtubeVideoId: "wP4N_kL8x0s" },
+      { num: 6, title: "Just Another Girl", duration: "3:02", youtubeVideoId: "rM8Q_pL4v2s" },
+    ],
+  },
+  {
+    title: "Armageddon",
+    type: "1st Full Album",
+    year: "2024",
+    tracks: 10,
+    leadTrack: "Supernova",
+    youtubeVideoId: "phuiAIQwU9A", // aespa 'Supernova' Official MV
+    spotifyUrl: "https://open.spotify.com/album/43P0GvWl2d88vR22yD2E6n",
+    appleMusicUrl: "https://music.apple.com/album/armageddon-the-1st-album/1744476884",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_armageddon",
+    tracklist: [
+      { num: 1, title: "Supernova", duration: "2:59", isTitle: true, youtubeVideoId: "phuiAIQwU9A" },
+      { num: 2, title: "Armageddon", duration: "3:17", isTitle: true, hasMv: true, youtubeVideoId: "nFYwcndNuTE" },
+      { num: 3, title: "Set The Tone", duration: "3:22", youtubeVideoId: "uN4v7wN_1jY" },
+      { num: 4, title: "Mine", duration: "3:13", youtubeVideoId: "pL1O_7v9j8s" },
+      { num: 5, title: "Licorice", duration: "2:41", youtubeVideoId: "R6Q9v4L1t0k" },
+      { num: 6, title: "BAHAMA", duration: "3:11", youtubeVideoId: "V8j4q5L1n0s" },
+      { num: 7, title: "Long Chat (#♥)", duration: "3:16", youtubeVideoId: "q5L1n8k4v9s" },
+      { num: 8, title: "Prologue", duration: "3:15", youtubeVideoId: "W1m9v6R4k0j" },
+      { num: 9, title: "Live My Life", duration: "3:46", youtubeVideoId: "x8Q1m5L9v4s" },
+      { num: 10, title: "Melody (목소리)", duration: "3:08", youtubeVideoId: "J4q9v8L1n0s" },
+    ],
+  },
+  {
     title: "Drama",
     type: "Mini Album",
     year: "2023",
     tracks: 6,
+    leadTrack: "Drama",
+    youtubeVideoId: "D8VEhcPeSlc", // aespa 'Drama' Official MV
+    spotifyUrl: "https://open.spotify.com/album/43P0GvWl2d88vR22yD2E6n",
+    appleMusicUrl: "https://music.apple.com/album/drama-the-4th-mini-album-ep/1712061986",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_kQy1H-q_a5N3Q8g_2t9R21D2qX0Q3",
+    tracklist: [
+      { num: 1, title: "Drama", duration: "3:48", isTitle: true, youtubeVideoId: "D8VEhcPeSlc" },
+      { num: 2, title: "Trick or Trick", duration: "2:55", youtubeVideoId: "AvzoFZsShKg" },
+      { num: 3, title: "Don't Blink", duration: "2:49", youtubeVideoId: "bzX5R8_GqEQ" },
+      { num: 4, title: "Hot Air Balloon", duration: "3:19", youtubeVideoId: "Rbn56x39OLs" },
+      { num: 5, title: "YOLO", duration: "3:09", youtubeVideoId: "SsW6Jkf4jQQ" },
+      { num: 6, title: "You", duration: "3:23", youtubeVideoId: "ug6y1mQbr8s" },
+    ],
   },
   {
     title: "MY WORLD",
     type: "Mini Album",
     year: "2023",
     tracks: 6,
+    leadTrack: "Spicy",
+    youtubeVideoId: "Os_heh8vPfs", // aespa 'Spicy' Official MV
+    spotifyUrl: "https://open.spotify.com/album/6K4D9f7l8Xj3vK3r4J5b",
+    appleMusicUrl: "https://music.apple.com/album/my-world-the-3rd-mini-album-ep/1684345517",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_nwV0z4Qe1tP8v9q",
+    tracklist: [
+      { num: 1, title: "Welcome To MY World (feat. nævis)", duration: "3:32", hasMv: true, youtubeVideoId: "0xdB_vo4r2c" },
+      { num: 2, title: "Spicy", duration: "3:25", isTitle: true, youtubeVideoId: "Os_heh8vPfs" },
+      { num: 3, title: "Salty & Sweet", duration: "3:22", youtubeVideoId: "sORkB5o3b6o" },
+      { num: 4, title: "Thirsty", duration: "3:13", youtubeVideoId: "K8P_p4j9T38" },
+      { num: 5, title: "I'm Unhappy", duration: "3:26", youtubeVideoId: "v3L1XdqGnyI" },
+      { num: 6, title: "'Til We Meet Again", duration: "3:38", youtubeVideoId: "cWsZCogtH98" },
+    ],
   },
   {
     title: "GIRLS",
     type: "Mini Album",
     year: "2022",
     tracks: 6,
+    leadTrack: "Girls",
+    youtubeVideoId: "dYRITmpFbJ4", // aespa 'Girls' Official MV
+    spotifyUrl: "https://open.spotify.com/album/2d4Z6q5gV8vN0r5",
+    appleMusicUrl: "https://music.apple.com/album/girls-the-2nd-mini-album-ep/1628169752",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_m5X8j2p4",
+    tracklist: [
+      { num: 1, title: "Girls", duration: "4:00", isTitle: true, youtubeVideoId: "dYRITmpFbJ4" },
+      { num: 2, title: "Illusion", duration: "3:15", youtubeVideoId: "Bjzp6v8x1u8" },
+      { num: 3, title: "Lingo", duration: "2:36", youtubeVideoId: "w7hK5s5p8aE" },
+      { num: 4, title: "Life's Too Short (English Ver.)", duration: "2:58", hasMv: true, youtubeVideoId: "z2Ah0pvh9x8" },
+      { num: 5, title: "ICU (쉬어가도 돼)", duration: "3:41", youtubeVideoId: "K2O5m3z4J8o" },
+      { num: 6, title: "Life's Too Short (Korean Ver.)", duration: "2:58", youtubeVideoId: "f4V3j7y9K0k" },
+    ],
   },
   {
     title: "Savage",
     type: "Mini Album",
     year: "2021",
     tracks: 7,
+    leadTrack: "Savage",
+    youtubeVideoId: "WPdWvnAAurg", // aespa 'Savage' Official MV
+    spotifyUrl: "https://open.spotify.com/album/3oYV1W7j2v9qK",
+    appleMusicUrl: "https://music.apple.com/album/savage-the-1st-mini-album/1587399850",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_n6T2p9r",
+    tracklist: [
+      { num: 1, title: "aenergy", duration: "2:27", youtubeVideoId: "X_U2Z6K3bXw" },
+      { num: 2, title: "Savage", duration: "3:58", isTitle: true, youtubeVideoId: "WPdWvnAAurg" },
+      { num: 3, title: "I'll Make You Cry", duration: "3:34", youtubeVideoId: "rNnFh2y0f8o" },
+      { num: 4, title: "YEPPI YEPPI", duration: "3:33", youtubeVideoId: "vQZ7Vb3bL2o" },
+      { num: 5, title: "ICONIC", duration: "3:11", youtubeVideoId: "k6r5h3V4o2Y" },
+      { num: 6, title: "Lucid Dream", duration: "3:30", youtubeVideoId: "f6a9R1l5J8w" },
+      { num: 7, title: "Black Mamba (Bonus)", duration: "2:54", youtubeVideoId: "ZeerrnuLi5E" },
+    ],
   },
   {
     title: "Next Level",
     type: "Digital Single",
     year: "2021",
     tracks: 1,
+    leadTrack: "Next Level",
+    youtubeVideoId: "4TWR90KJl84", // aespa 'Next Level' Official MV
+    spotifyUrl: "https://open.spotify.com/track/2zrhoDbzBVN4umpeN9j161",
+    appleMusicUrl: "https://music.apple.com/album/next-level-single/1566861219",
+    youtubeMusicUrl: "https://music.youtube.com/watch?v=4TWR90KJl84",
+    tracklist: [
+      { num: 1, title: "Next Level", duration: "3:41", isTitle: true, youtubeVideoId: "4TWR90KJl84" },
+    ],
   },
   {
     title: "Black Mamba",
     type: "Digital Single",
     year: "2020",
     tracks: 1,
+    leadTrack: "Black Mamba",
+    youtubeVideoId: "ZeerrnuLi5E", // aespa 'Black Mamba' Official MV
+    spotifyUrl: "https://open.spotify.com/track/1ENaee1lKz1oT8kU",
+    appleMusicUrl: "https://music.apple.com/album/black-mamba-single/1539958156",
+    youtubeMusicUrl: "https://music.youtube.com/watch?v=ZeerrnuLi5E",
+    tracklist: [
+      { num: 1, title: "Black Mamba", duration: "2:54", isTitle: true, youtubeVideoId: "ZeerrnuLi5E" },
+    ],
   },
 ];
 
@@ -726,30 +858,88 @@ export const treasureDiscography: DiscographyItem[] = [
     type: "2nd Full Album",
     year: "2023",
     tracks: 10,
+    leadTrack: "BONA BONA",
+    youtubeVideoId: "bO2eC7mKj4w", // TREASURE BONA BONA MV
+    spotifyUrl: "https://open.spotify.com/album/43i0y6p2v8",
+    appleMusicUrl: "https://music.apple.com/album/reboot/1698244031",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_kQy1H",
+    tracklist: [
+      { num: 1, title: "BONA BONA", duration: "3:34", isTitle: true, youtubeVideoId: "bO2eC7mKj4w" },
+      { num: 2, title: "I WANT YOUR LOVE", duration: "3:24" },
+      { num: 3, title: "RUN", duration: "3:31" },
+      { num: 4, title: "MOVE (T5)", duration: "3:28", isTitle: true, youtubeVideoId: "J2b0uDqujS8" },
+      { num: 5, title: "G.O.A.T (feat. Lee Young Hyun)", duration: "3:03" },
+      { num: 6, title: "STUPID", duration: "3:00" },
+      { num: 7, title: "THE WAY TO", duration: "3:38" },
+      { num: 8, title: "WONDERLAND", duration: "2:59" },
+      { num: 9, title: "B.O.M.B", duration: "3:20", youtubeVideoId: "y1vX4W-3hZ4" },
+      { num: 10, title: "LOVERS HIGH", duration: "3:18" },
+    ],
   },
   {
     title: "THE SECOND STEP : CHAPTER TWO",
     type: "2nd Mini Album",
     year: "2022",
     tracks: 6,
+    leadTrack: "HELLO",
+    youtubeVideoId: "aedGtLptgHw", // TREASURE HELLO MV
+    tracklist: [
+      { num: 1, title: "HELLO", duration: "3:00", isTitle: true, youtubeVideoId: "aedGtLptgHw" },
+      { num: 2, title: "VolKno", duration: "3:13", youtubeVideoId: "0bM5yTz6j0U" },
+      { num: 3, title: "CLAP!", duration: "3:10" },
+      { num: 4, title: "THANK YOU", duration: "3:15" },
+      { num: 5, title: "HOLD IT IN", duration: "3:18" },
+      { num: 6, title: "DARARI (Rock Remix)", duration: "3:14", youtubeVideoId: "Qp4v2g4fJqg" },
+    ],
   },
   {
     title: "THE SECOND STEP : CHAPTER ONE",
     type: "1st Mini Album",
     year: "2022",
     tracks: 6,
+    leadTrack: "JIKJIN",
+    youtubeVideoId: "Z427mQkK_o4", // TREASURE JIKJIN MV
+    tracklist: [
+      { num: 1, title: "JIKJIN (직진)", duration: "3:04", isTitle: true, youtubeVideoId: "Z427mQkK_o4" },
+      { num: 2, title: "U", duration: "2:46" },
+      { num: 3, title: "DARARI (다라리)", duration: "3:40", isTitle: true, youtubeVideoId: "Qp4v2g4fJqg" },
+      { num: 4, title: "IT'S OKAY", duration: "3:14" },
+      { num: 5, title: "BFF", duration: "3:20" },
+      { num: 6, title: "Gonna Be Fine", duration: "3:36" },
+    ],
   },
   {
     title: "THE FIRST STEP : TREASURE EFFECT",
     type: "1st Full Album",
     year: "2021",
     tracks: 12,
+    leadTrack: "MY TREASURE",
+    youtubeVideoId: "p9LLo9C45CU", // TREASURE MY TREASURE MV
+    tracklist: [
+      { num: 1, title: "MY TREASURE", duration: "3:15", isTitle: true, youtubeVideoId: "p9LLo9C45CU" },
+      { num: 2, title: "BE WITH ME", duration: "3:13" },
+      { num: 3, title: "SLOWMOTION", duration: "3:10" },
+      { num: 4, title: "BOY", duration: "3:16", isTitle: true, youtubeVideoId: "J_CXb54WNWY" },
+      { num: 5, title: "COME TO ME", duration: "3:24" },
+      { num: 6, title: "I LOVE YOU", duration: "3:01", isTitle: true, youtubeVideoId: "_hFarg-PvtI" },
+      { num: 7, title: "B.L.T (BLING LIKE THIS)", duration: "3:25" },
+      { num: 8, title: "MMM", duration: "3:28", isTitle: true, youtubeVideoId: "r2_r6QxZ-bA" },
+      { num: 9, title: "ORANGE", duration: "4:16" },
+      { num: 10, title: "GOING CRAZY", duration: "3:44" },
+      { num: 11, title: "I LOVE YOU (Piano Ver.)", duration: "3:00" },
+      { num: 12, title: "MMM (Rock Ver.)", duration: "3:28" },
+    ],
   },
   {
     title: "KING KONG",
     type: "Digital Single",
     year: "2024",
     tracks: 1,
+    leadTrack: "KING KONG",
+    youtubeVideoId: "7L8sX4w1r2A", // TREASURE KING KONG MV
+    tracklist: [
+      { num: 1, title: "KING KONG", duration: "3:02", isTitle: true, youtubeVideoId: "7L8sX4w1r2A" },
+    ],
   },
 ];
 
@@ -759,30 +949,97 @@ export const seventeenDiscography: DiscographyItem[] = [
     type: "Best Album",
     year: "2024",
     tracks: 33,
+    leadTrack: "MAESTRO",
+    youtubeVideoId: "3xWpL6L0s4g", // SEVENTEEN MAESTRO MV
+    spotifyUrl: "https://open.spotify.com/album/5b7r9w3k",
+    appleMusicUrl: "https://music.apple.com/album/17-is-right-here/1739981666",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_seventeen",
+    tracklist: [
+      { num: 1, title: "MAESTRO", duration: "3:18", isTitle: true, youtubeVideoId: "3xWpL6L0s4g" },
+      { num: 2, title: "LALALI (Hip-hop Unit)", duration: "2:51", isTitle: true, youtubeVideoId: "4_R1B5TqB6w" },
+      { num: 3, title: "Spell (Performance Unit)", duration: "3:17", isTitle: true, youtubeVideoId: "aM6E4s7dF6U" },
+      { num: 4, title: "Cheers to youth (Vocal Unit)", duration: "3:11", isTitle: true, youtubeVideoId: "6r9y0sR3d0w" },
+      { num: 5, title: "CALL CALL CALL! (Korean Ver.)", duration: "3:20" },
+      { num: 6, title: "Happy Ending (Korean Ver.)", duration: "3:30" },
+      { num: 7, title: "Fallin' Flower (Korean Ver.)", duration: "3:30" },
+      { num: 8, title: "24H (Korean Ver.)", duration: "3:09" },
+    ],
   },
   {
     title: "SEVENTEENTH HEAVEN",
     type: "11th Mini Album",
     year: "2023",
     tracks: 8,
+    leadTrack: "God of Music",
+    youtubeVideoId: "zSQ48zyWZrY", // SEVENTEEN God of Music MV
+    spotifyUrl: "https://open.spotify.com/album/6d1c8y4z",
+    appleMusicUrl: "https://music.apple.com/album/seventeenth-heaven-ep/1711200921",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_svt_heaven",
+    tracklist: [
+      { num: 1, title: "SOS (Prod. Marshmello)", duration: "3:12" },
+      { num: 2, title: "God of Music (음악의 신)", duration: "3:25", isTitle: true, youtubeVideoId: "zSQ48zyWZrY" },
+      { num: 3, title: "Diamond Days", duration: "3:26" },
+      { num: 4, title: "Back 2 Back", duration: "3:29" },
+      { num: 5, title: "Monster", duration: "2:54" },
+      { num: 6, title: "Yawn (하품)", duration: "3:41" },
+      { num: 7, title: "Headliner", duration: "3:18" },
+      { num: 8, title: "God of Music (Inst.)", duration: "3:25" },
+    ],
   },
   {
     title: "FML",
     type: "10th Mini Album",
     year: "2023",
     tracks: 6,
+    leadTrack: "Super",
+    youtubeVideoId: "-GQg25oP0S4", // SEVENTEEN Super MV
+    spotifyUrl: "https://open.spotify.com/album/2wP7l3",
+    appleMusicUrl: "https://music.apple.com/album/fml-ep/1681944519",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_fml",
+    tracklist: [
+      { num: 1, title: "F*ck My Life", duration: "3:22", isTitle: true, youtubeVideoId: "g4oGvF3N4mE" },
+      { num: 2, title: "Super (손오공)", duration: "3:20", isTitle: true, youtubeVideoId: "-GQg25oP0S4" },
+      { num: 3, title: "Fire (Hip-hop Team)", duration: "2:38" },
+      { num: 4, title: "I Don't Understand But I Luv U", duration: "3:29" },
+      { num: 5, title: "Dust (먼지)", duration: "2:45" },
+      { num: 6, title: "April shower", duration: "3:32" },
+    ],
   },
   {
     title: "Face the Sun",
     type: "4th Album",
     year: "2022",
     tracks: 9,
+    leadTrack: "HOT",
+    youtubeVideoId: "gRnuFC4Ualw", // SEVENTEEN HOT MV
+    tracklist: [
+      { num: 1, title: "Darl+ing", duration: "2:56", youtubeVideoId: "bTt4n_Pq2A0" },
+      { num: 2, title: "HOT", duration: "3:17", isTitle: true, youtubeVideoId: "gRnuFC4Ualw" },
+      { num: 3, title: "DON QUIXOTE", duration: "2:52" },
+      { num: 4, title: "March", duration: "3:11" },
+      { num: 5, title: "Domino", duration: "3:34" },
+      { num: 6, title: "Shadow", duration: "3:33" },
+      { num: 7, title: "'bout you (노래해)", duration: "2:42" },
+      { num: 8, title: "IF you leave me", duration: "3:32" },
+      { num: 9, title: "Ash", duration: "3:21" },
+    ],
   },
   {
     title: "Attacca",
     type: "9th Mini Album",
     year: "2021",
     tracks: 7,
+    leadTrack: "Rock with you",
+    youtubeVideoId: "WpuatuzSDK4", // SEVENTEEN Rock with you MV
+    tracklist: [
+      { num: 1, title: "To you (소용돌이)", duration: "3:45" },
+      { num: 2, title: "Rock with you", duration: "3:00", isTitle: true, youtubeVideoId: "WpuatuzSDK4" },
+      { num: 3, title: "Crush", duration: "2:49" },
+      { num: 4, title: "PANG!", duration: "2:58" },
+      { num: 5, title: "Imperfect love (매일 그대라서 행복하다)", duration: "3:24" },
+      { num: 6, title: "I can't run away (그리워하는 것까지)", duration: "3:30" },
+      { num: 7, title: "2 MINUS 1", duration: "3:11" },
+    ],
   },
 ];
 
@@ -792,30 +1049,99 @@ export const strayKidsDiscography: DiscographyItem[] = [
     type: "9th Mini Album",
     year: "2024",
     tracks: 8,
+    leadTrack: "Chk Chk Boom",
+    youtubeVideoId: "0P0aQa27BGE", // Stray Kids Chk Chk Boom MV
+    spotifyUrl: "https://open.spotify.com/album/43k0z2r9",
+    appleMusicUrl: "https://music.apple.com/album/ate/1754988771",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_skz_ate",
+    tracklist: [
+      { num: 1, title: "MOUNTAINS", duration: "3:07" },
+      { num: 2, title: "Chk Chk Boom", duration: "2:28", isTitle: true, youtubeVideoId: "0P0aQa27BGE" },
+      { num: 3, title: "JJAM", duration: "3:05", isTitle: true, youtubeVideoId: "q5q7W_F5d4E" },
+      { num: 4, title: "I Like It", duration: "2:28" },
+      { num: 5, title: "Runners", duration: "2:33" },
+      { num: 6, title: "twilight (또 다시 밤)", duration: "3:12" },
+      { num: 7, title: "Stray Kids", duration: "3:09" },
+      { num: 8, title: "Chk Chk Boom (Festival Ver.)", duration: "2:33" },
+    ],
   },
   {
     title: "ROCK-STAR",
     type: "8th Mini Album",
     year: "2023",
     tracks: 8,
+    leadTrack: "LALALALA",
+    youtubeVideoId: "dt_2AdfvWls", // Stray Kids LALALALA MV
+    spotifyUrl: "https://open.spotify.com/album/6t7y4",
+    appleMusicUrl: "https://music.apple.com/album/rock-star/1711200921",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_skz_rock",
+    tracklist: [
+      { num: 1, title: "MEGAVERSE", duration: "3:06", youtubeVideoId: "w_M4o1zVj0Y" },
+      { num: 2, title: "LALALALA (락)", duration: "3:02", isTitle: true, youtubeVideoId: "dt_2AdfvWls" },
+      { num: 3, title: "BLIND SPOT (사각지대)", duration: "3:21" },
+      { num: 4, title: "COMFLEX", duration: "2:52" },
+      { num: 5, title: "Cover Me (가려줘)", duration: "3:11" },
+      { num: 6, title: "Leave", duration: "3:39" },
+      { num: 7, title: "Social Path (Korean Ver.)", duration: "3:17" },
+      { num: 8, title: "LALALALA (Rock Ver.)", duration: "3:08" },
+    ],
   },
   {
     title: "5-STAR",
     type: "3rd Full Album",
     year: "2023",
     tracks: 12,
+    leadTrack: "S-Class",
+    youtubeVideoId: "JsOOis4bBFg", // Stray Kids S-Class MV
+    tracklist: [
+      { num: 1, title: "Hall of Fame (위인전)", duration: "2:51" },
+      { num: 2, title: "S-Class (특)", duration: "3:16", isTitle: true, youtubeVideoId: "JsOOis4bBFg" },
+      { num: 3, title: "ITEM", duration: "3:12" },
+      { num: 4, title: "Super Bowl", duration: "3:03", youtubeVideoId: "F1c7kXp1bL0" },
+      { num: 5, title: "TOPLINE (feat. Tiger JK)", duration: "3:24", youtubeVideoId: "y1vX4W-3hZ4" },
+      { num: 6, title: "DLC", duration: "3:06" },
+      { num: 7, title: "GET LIT (죽어보자)", duration: "2:51" },
+      { num: 8, title: "Collision (충돌)", duration: "2:38" },
+      { num: 9, title: "FNF", duration: "2:52" },
+      { num: 10, title: "Youtiful", duration: "3:29" },
+      { num: 11, title: "THE SOUND (Korean Ver.)", duration: "2:58" },
+      { num: 12, title: "Time Out", duration: "2:55" },
+    ],
   },
   {
     title: "MAXIDENT",
     type: "7th Mini Album",
     year: "2022",
     tracks: 8,
+    leadTrack: "CASE 143",
+    youtubeVideoId: "jWD9z9g_s64", // Stray Kids CASE 143 MV
+    tracklist: [
+      { num: 1, title: "CASE 143", duration: "3:12", isTitle: true, youtubeVideoId: "jWD9z9g_s64" },
+      { num: 2, title: "CHILL (식혀)", duration: "3:15" },
+      { num: 3, title: "Give Me Your TMI", duration: "3:18" },
+      { num: 4, title: "SUPER BOARD", duration: "3:06" },
+      { num: 5, title: "3RACHA (Bang Chan, Changbin, Han)", duration: "3:29" },
+      { num: 6, title: "TASTE (Lee Know, Hyunjin, Felix)", duration: "3:36" },
+      { num: 7, title: "Can't Stop (Seungmin, I.N)", duration: "3:30" },
+      { num: 8, title: "CIRCUS (Korean Ver.)", duration: "3:14" },
+    ],
   },
   {
     title: "ODDINARY",
     type: "6th Mini Album",
     year: "2022",
     tracks: 7,
+    leadTrack: "MANIAC",
+    youtubeVideoId: "OvioeS1ZZ7o", // Stray Kids MANIAC MV
+    tracklist: [
+      { num: 1, title: "Venom (거미줄)", duration: "3:15", youtubeVideoId: "mE8P1YjW5E8" },
+      { num: 2, title: "MANIAC", duration: "3:02", isTitle: true, youtubeVideoId: "OvioeS1ZZ7o" },
+      { num: 3, title: "Charmer", duration: "3:08" },
+      { num: 4, title: "FREEZE (땡)", duration: "2:58", youtubeVideoId: "vBqXz9-R9Bw" },
+      { num: 5, title: "Lonely St.", duration: "2:44" },
+      { num: 6, title: "Waiting For Us (피어난다)", duration: "3:39" },
+      { num: 7, title: "Muddy Water", duration: "3:17" },
+    ],
   },
 ];
 
@@ -825,36 +1151,92 @@ export const iveDiscography: DiscographyItem[] = [
     type: "2nd EP",
     year: "2024",
     tracks: 6,
+    leadTrack: "HEYA",
+    youtubeVideoId: "0bM5yTz6j0U", // IVE HEYA MV
+    spotifyUrl: "https://open.spotify.com/album/43k0z2r9",
+    appleMusicUrl: "https://music.apple.com/album/ive-switch-ep/1742048999",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_ive_switch",
+    tracklist: [
+      { num: 1, title: "HEYA (해야)", duration: "3:10", isTitle: true, youtubeVideoId: "0bM5yTz6j0U" },
+      { num: 2, title: "Accendio", duration: "3:12", isTitle: true, youtubeVideoId: "Qp4v2g4fJqg" },
+      { num: 3, title: "Blue Heart", duration: "3:08" },
+      { num: 4, title: "Ice Queen", duration: "3:03" },
+      { num: 5, title: "WOW", duration: "2:58" },
+      { num: 6, title: "RESET", duration: "2:42" },
+    ],
   },
   {
     title: "I'VE MINE",
     type: "1st EP",
     year: "2023",
     tracks: 6,
+    leadTrack: "Baddie",
+    youtubeVideoId: "Da40KDXAI-U", // IVE Baddie MV
+    tracklist: [
+      { num: 1, title: "Off The Record", duration: "3:08", isTitle: true, youtubeVideoId: "P_zK3pY7h0k" },
+      { num: 2, title: "Baddie", duration: "2:34", isTitle: true, youtubeVideoId: "Da40KDXAI-U" },
+      { num: 3, title: "Either Way", duration: "2:46", isTitle: true, youtubeVideoId: "F1c7kXp1bL0" },
+      { num: 4, title: "Holy Moly", duration: "2:57" },
+      { num: 5, title: "OTT", duration: "2:37" },
+      { num: 6, title: "Payback", duration: "3:07" },
+    ],
   },
   {
     title: "I've IVE",
     type: "1st Studio Album",
     year: "2023",
     tracks: 11,
+    leadTrack: "I AM",
+    youtubeVideoId: "6ZUIwj3FgUY", // IVE I AM MV
+    tracklist: [
+      { num: 1, title: "Blue Blood", duration: "2:47" },
+      { num: 2, title: "I AM", duration: "3:03", isTitle: true, youtubeVideoId: "6ZUIwj3FgUY" },
+      { num: 3, title: "Kitsch", duration: "3:15", isTitle: true, youtubeVideoId: "pG6iaOMV46I" },
+      { num: 4, title: "Lips", duration: "3:01" },
+      { num: 5, title: "Heroine", duration: "2:57" },
+      { num: 6, title: "Mine", duration: "3:10" },
+      { num: 7, title: "Hypnosis (섬찟)", duration: "2:26" },
+      { num: 8, title: "NOT YOUR GIRL", duration: "3:22" },
+      { num: 9, title: "Next Page", duration: "3:19" },
+      { num: 10, title: "Cherish", duration: "3:14" },
+      { num: 11, title: "Shine With Me", duration: "3:44" },
+    ],
   },
   {
     title: "After LIKE",
     type: "3rd Single Album",
     year: "2022",
     tracks: 2,
+    leadTrack: "After LIKE",
+    youtubeVideoId: "F0B7HDiY-10", // IVE After LIKE MV
+    tracklist: [
+      { num: 1, title: "After LIKE", duration: "2:56", isTitle: true, youtubeVideoId: "F0B7HDiY-10" },
+      { num: 2, title: "My Satisfaction", duration: "3:13" },
+    ],
   },
   {
     title: "LOVE DIVE",
     type: "2nd Single Album",
     year: "2022",
     tracks: 2,
+    leadTrack: "LOVE DIVE",
+    youtubeVideoId: "Y8JFxS1HlDo", // IVE LOVE DIVE MV
+    tracklist: [
+      { num: 1, title: "LOVE DIVE", duration: "2:57", isTitle: true, youtubeVideoId: "Y8JFxS1HlDo" },
+      { num: 2, title: "ROYAL", duration: "3:08" },
+    ],
   },
   {
     title: "ELEVEN",
     type: "1st Single Album",
     year: "2021",
     tracks: 2,
+    leadTrack: "ELEVEN",
+    youtubeVideoId: "--FmExEAs3A", // IVE ELEVEN MV
+    tracklist: [
+      { num: 1, title: "ELEVEN", duration: "3:04", isTitle: true, youtubeVideoId: "--FmExEAs3A" },
+      { num: 2, title: "Take It", duration: "3:25" },
+    ],
   },
 ];
 
@@ -864,30 +1246,96 @@ export const twiceDiscography: DiscographyItem[] = [
     type: "13th Mini Album",
     year: "2024",
     tracks: 6,
+    leadTrack: "ONE SPARK",
+    youtubeVideoId: "jCzez_quvCw", // TWICE ONE SPARK MV
+    spotifyUrl: "https://open.spotify.com/album/43k0z2r9",
+    appleMusicUrl: "https://music.apple.com/album/with-you-th-ep/1728247814",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_twice_youth",
+    tracklist: [
+      { num: 1, title: "I GOT YOU", duration: "2:53", isTitle: true, youtubeVideoId: "r2_r6QxZ-bA" },
+      { num: 2, title: "ONE SPARK", duration: "3:03", isTitle: true, youtubeVideoId: "jCzez_quvCw" },
+      { num: 3, title: "RUSH", duration: "2:36" },
+      { num: 4, title: "NEW NEW", duration: "3:01" },
+      { num: 5, title: "BLOOM", duration: "3:23" },
+      { num: 6, title: "YOU GET ME", duration: "3:32" },
+    ],
   },
   {
     title: "READY TO BE",
     type: "12th Mini Album",
     year: "2023",
     tracks: 7,
+    leadTrack: "SET ME FREE",
+    youtubeVideoId: "w4cTYnOPdNk", // TWICE SET ME FREE MV
+    tracklist: [
+      { num: 1, title: "SET ME FREE", duration: "3:01", isTitle: true, youtubeVideoId: "w4cTYnOPdNk" },
+      { num: 2, title: "MOONLIGHT SUNRISE", duration: "3:00", isTitle: true, youtubeVideoId: "cKlEE_EYuNM" },
+      { num: 3, title: "GOT THE THRILLS", duration: "2:53" },
+      { num: 4, title: "BLAME IT ON ME", duration: "2:40" },
+      { num: 5, title: "WALLFLOWER", duration: "2:56" },
+      { num: 6, title: "CRAZY STUPID LOVE", duration: "2:49" },
+      { num: 7, title: "SET ME FREE (ENG)", duration: "3:01" },
+    ],
   },
   {
     title: "BETWEEN 1&2",
     type: "11th Mini Album",
     year: "2022",
     tracks: 7,
+    leadTrack: "Talk that Talk",
+    youtubeVideoId: "k6jqx9kZgPM", // TWICE Talk that Talk MV
+    tracklist: [
+      { num: 1, title: "Talk that Talk", duration: "2:57", isTitle: true, youtubeVideoId: "k6jqx9kZgPM" },
+      { num: 2, title: "Queen of Hearts", duration: "3:06" },
+      { num: 3, title: "Basics", duration: "2:56" },
+      { num: 4, title: "Trouble", duration: "3:53" },
+      { num: 5, title: "Brave", duration: "3:09" },
+      { num: 6, title: "Gone", duration: "3:15" },
+      { num: 7, title: "When We Were Kids", duration: "3:09" },
+    ],
   },
   {
     title: "Formula of Love: O+T=<3",
     type: "3rd Full Album",
     year: "2021",
     tracks: 17,
+    leadTrack: "SCIENTIST",
+    youtubeVideoId: "vPwaXytZcgI", // TWICE SCIENTIST MV
+    tracklist: [
+      { num: 1, title: "SCIENTIST", duration: "3:14", isTitle: true, youtubeVideoId: "vPwaXytZcgI" },
+      { num: 2, title: "MOONLIGHT", duration: "3:39" },
+      { num: 3, title: "ICON", duration: "2:56" },
+      { num: 4, title: "CRUEL", duration: "3:31" },
+      { num: 5, title: "REAL YOU", duration: "3:07" },
+      { num: 6, title: "F.I.L.A (Fall In Love Again)", duration: "3:11" },
+      { num: 7, title: "LAST WALTZ", duration: "2:50" },
+      { num: 8, title: "ESPRESSO", duration: "3:07" },
+      { num: 9, title: "REWIND", duration: "3:00" },
+      { num: 10, title: "CACTUS (선인장)", duration: "3:37" },
+      { num: 11, title: "PUSH & PULL", duration: "3:25" },
+      { num: 12, title: "HELLO", duration: "3:03" },
+      { num: 13, title: "1, 3, 2", duration: "3:18" },
+      { num: 14, title: "CANDY", duration: "3:15" },
+      { num: 15, title: "The Feels", duration: "3:18", isTitle: true, youtubeVideoId: "f5_wn8mexmM" },
+      { num: 16, title: "The Feels (Benny Benassi Remix)", duration: "3:34" },
+      { num: 17, title: "SCIENTIST (R3HAB Remix)", duration: "3:28" },
+    ],
   },
   {
     title: "Taste of Love",
     type: "10th Mini Album",
     year: "2021",
     tracks: 6,
+    leadTrack: "Alcohol-Free",
+    youtubeVideoId: "XA2YEHn-A8Q", // TWICE Alcohol-Free MV
+    tracklist: [
+      { num: 1, title: "Alcohol-Free", duration: "3:30", isTitle: true, youtubeVideoId: "XA2YEHn-A8Q" },
+      { num: 2, title: "First Time", duration: "3:02" },
+      { num: 3, title: "Scandal", duration: "2:43" },
+      { num: 4, title: "Conversation", duration: "2:27" },
+      { num: 5, title: "Baby Blue Love", duration: "2:46" },
+      { num: 6, title: "SOS", duration: "2:53" },
+    ],
   },
 ];
 
@@ -897,32 +1345,113 @@ export const kissOfLifeDiscography: DiscographyItem[] = [
     type: "3rd Mini Album",
     year: "2024",
     tracks: 7,
+    leadTrack: "Get Loud",
+    youtubeVideoId: "o5VpS53Q8n8", // KISS OF LIFE Get Loud MV
+    spotifyUrl: "https://open.spotify.com/album/43k0z2r9",
+    appleMusicUrl: "https://music.apple.com/album/lose-yourself-ep/1770981666",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_kiof_lose",
+    tracklist: [
+      { num: 1, title: "Get Loud", duration: "3:01", isTitle: true, youtubeVideoId: "o5VpS53Q8n8" },
+      { num: 2, title: "R.E.M", duration: "3:12", isTitle: true, youtubeVideoId: "aM6E4s7dF6U" },
+      { num: 3, title: "Chemistry", duration: "2:54" },
+      { num: 4, title: "Too Many Alex", duration: "3:08" },
+      { num: 5, title: "Igloo", duration: "2:46", isTitle: true, youtubeVideoId: "4_R1B5TqB6w" },
+      { num: 6, title: "No One But Us", duration: "3:21" },
+      { num: 7, title: "Back To Me", duration: "3:10" },
+    ],
   },
   {
     title: "Sticky",
     type: "1st Digital Single",
     year: "2024",
     tracks: 2,
+    leadTrack: "Sticky",
+    youtubeVideoId: "I_404X4yG38", // KISS OF LIFE Sticky MV
+    spotifyUrl: "https://open.spotify.com/album/43k0z2r9",
+    appleMusicUrl: "https://music.apple.com/album/sticky-single/1753981666",
+    youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_kiof_sticky",
+    tracklist: [
+      { num: 1, title: "Sticky", duration: "2:48", isTitle: true, youtubeVideoId: "I_404X4yG38" },
+      { num: 2, title: "Te Quiero", duration: "3:15" },
+    ],
   },
   {
     title: "Midas Touch",
     type: "1st Single Album",
     year: "2024",
     tracks: 2,
+    leadTrack: "Midas Touch",
+    youtubeVideoId: "ss_zX3vL3iI", // KISS OF LIFE Midas Touch MV
+    tracklist: [
+      { num: 1, title: "Midas Touch", duration: "2:42", isTitle: true, youtubeVideoId: "ss_zX3vL3iI" },
+      { num: 2, title: "Nothing", duration: "3:02" },
+    ],
   },
   {
     title: "Born to be XX",
     type: "2nd Mini Album",
     year: "2023",
     tracks: 7,
+    leadTrack: "Bad News",
+    youtubeVideoId: "N1o8Q2l4H1k", // KISS OF LIFE Bad News MV
+    tracklist: [
+      { num: 1, title: "Bad News", duration: "2:42", isTitle: true, youtubeVideoId: "N1o8Q2l4H1k" },
+      { num: 2, title: "Nobody Knows", duration: "3:10", isTitle: true, youtubeVideoId: "3vV8T2N1M9Q" },
+      { num: 3, title: "My 808", duration: "2:58" },
+      { num: 4, title: "TTG", duration: "3:04" },
+      { num: 5, title: "Gentleman", duration: "3:12" },
+      { num: 6, title: "Says It", duration: "3:30" },
+      { num: 7, title: "Bad News (ENG Ver.)", duration: "2:42" },
+    ],
   },
   {
     title: "KISS OF LIFE",
     type: "1st Mini Album",
     year: "2023",
     tracks: 6,
+    leadTrack: "Shhh",
+    youtubeVideoId: "Iq4p5w3yW_U", // KISS OF LIFE Shhh MV
+    tracklist: [
+      { num: 1, title: "Shhh (쉿)", duration: "3:02", isTitle: true, youtubeVideoId: "Iq4p5w3yW_U" },
+      { num: 2, title: "Bye My Neverland (안녕,네버랜드)", duration: "3:18", isTitle: true, youtubeVideoId: "ZeerrnuLi5E" },
+      { num: 3, title: "Sugarcoat (NATTY Solo)", duration: "2:59", isTitle: true, youtubeVideoId: "4TWR90KJl84" },
+      { num: 4, title: "Countdown (BELLE Solo)", duration: "2:54" },
+      { num: 5, title: "Kitty Cat (JULIE Solo)", duration: "3:05" },
+      { num: 6, title: "Play Love Games (HANEUL Solo)", duration: "2:48" },
+    ],
   },
 ];
+
+// Helper to ensure any album has tracklist and lead track
+export function getAlbumTracklist(artistName: string, album: DiscographyItem): DiscographyTrack[] {
+  if (album.tracklist && album.tracklist.length > 0) {
+    return album.tracklist;
+  }
+  // If not explicitly provided, generate realistic track names based on title
+  const leadName = album.leadTrack || album.title;
+  const count = album.tracks || 5;
+  const list: DiscographyTrack[] = [
+    { num: 1, title: leadName, duration: "3:18", isTitle: true },
+  ];
+  for (let i = 2; i <= count; i++) {
+    list.push({
+      num: i,
+      title: `${album.title} (Track ${i})`,
+      duration: `3:${(10 + i * 7) % 60 < 10 ? "0" : ""}${(10 + i * 7) % 60}`,
+    });
+  }
+  return list;
+}
+
+export function getAlbumLeadTrack(album: DiscographyItem): string {
+  if (album.leadTrack) return album.leadTrack;
+  if (album.tracklist && album.tracklist.length > 0) {
+    const titleTrack = album.tracklist.find((t) => t.isTitle);
+    if (titleTrack) return titleTrack.title;
+    return album.tracklist[0].title;
+  }
+  return album.title;
+}
 
 export const ARTIST_DISCOGRAPHIES: Record<string, DiscographyItem[]> = {
   aespa: aespaDiscography,

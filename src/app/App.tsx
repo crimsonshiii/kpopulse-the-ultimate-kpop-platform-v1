@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   Home,
   Compass,
@@ -12,6 +12,14 @@ import {
   Star,
   Calendar,
   Play,
+  Pause,
+  SkipBack,
+  SkipForward,
+  Volume2,
+  VolumeX,
+  Disc3,
+  ListMusic,
+  ExternalLink,
   ChevronRight,
   ArrowLeft,
   Music,
@@ -34,6 +42,7 @@ import {
   CheckCircle2,
   KeyRound,
   ShieldAlert,
+  Sparkles,
 } from "lucide-react";
 import {
   type Screen,
@@ -43,6 +52,7 @@ import {
   type NewsItem,
   type TrackItem,
   type DiscographyItem,
+  type DiscographyTrack,
   type ScheduleItem,
   type UserPersonalization,
   type UserAccount,
@@ -62,9 +72,18 @@ import {
   TAB_TITLES,
   DEFAULT_PERSONALIZATION,
   DEFAULT_ACCOUNTS,
+  getAlbumTracklist,
+  getAlbumLeadTrack,
 } from "./data";
 import { PersonalizationScreen } from "./components/PersonalizationScreen";
 import { SafeImage } from "./components/SafeImage";
+import {
+  AudioPlaybackDeck,
+  parseDurationToSeconds,
+} from "./components/AudioPlaybackDeck";
+import { TracklistModal } from "./components/TracklistModal";
+import { AudioProvider, useAudioPlayer } from "./context/AudioContext";
+import { PersistentAudioBar } from "./components/PersistentAudioBar";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -1562,6 +1581,23 @@ function ArtistProfile({
   const discography = ARTIST_DISCOGRAPHIES[artist.name] || aespaDiscography;
   const SCHEDULE = DEFAULT_SCHEDULE;
 
+  // Global Background Audio Playback State
+  const audio = useAudioPlayer();
+  const isCurrentArtistPlaying = audio.playingArtist?.name === artist.name;
+  const playingAlbum = isCurrentArtistPlaying ? audio.playingAlbum : null;
+  const currentTrackIndex = audio.currentTrackIndex;
+  const isPlaying = audio.isPlaying;
+  const currentTime = audio.currentTime;
+  const duration = audio.duration;
+  const volume = audio.volume;
+  const isMuted = audio.isMuted;
+  const showVideo = audio.showVideo;
+
+  // Handle clicking "Listen" or playing an album
+  const handleListenAlbum = (album: DiscographyItem) => {
+    audio.playAlbum(artist, album);
+  };
+
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
       {/* Wide hero */}
@@ -1769,37 +1805,161 @@ function ArtistProfile({
           )}
 
           {tab === "disco" && (
-            <div className="space-y-3">
-              {discography.map((album) => (
-                <div
-                  key={album.title}
-                  className="flex items-center gap-4 bg-card rounded-xl border border-border p-4 hover:border-primary/20 transition-colors"
-                >
-                  <div
-                    className="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center"
-                    style={{
-                      backgroundColor: artist.color + "25",
-                    }}
-                  >
-                    <Music
-                      className="w-5 h-5"
-                      style={{ color: artist.color }}
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-foreground">
-                      {album.title}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {album.type} · {album.year} ·{" "}
-                      {album.tracks} tracks
-                    </p>
-                  </div>
-                  <button className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors px-3 py-1.5 rounded-lg hover:bg-primary/10">
-                    <Play className="w-3.5 h-3.5" /> Listen
-                  </button>
-                </div>
-              ))}
+            <div className="space-y-4">
+              {/* In-App Audio Playback Deck */}
+              {playingAlbum && (
+                <AudioPlaybackDeck
+                  artist={artist}
+                  album={playingAlbum}
+                  currentTrackIndex={currentTrackIndex}
+                  isPlaying={isPlaying}
+                  currentTime={currentTime}
+                  duration={duration}
+                  volume={volume}
+                  isMuted={isMuted}
+                  showVideo={showVideo}
+                  onTogglePlay={audio.togglePlay}
+                  onPrevTrack={audio.prevTrack}
+                  onNextTrack={audio.nextTrack}
+                  onSeek={audio.seek}
+                  onVolumeChange={audio.setVolume}
+                  onToggleMute={audio.toggleMute}
+                  onOpenTracklist={() => audio.openTracklistModal(artist, playingAlbum)}
+                  onToggleShowVideo={audio.toggleShowVideo}
+                  onSetIsPlaying={audio.setIsPlaying}
+                  onTimeUpdate={(cur, dur) => {}}
+                />
+              )}
+
+              {/* Discography List */}
+              <div className="space-y-3">
+                {discography.map((album) => {
+                  const isCurrentAlbumActive = playingAlbum?.title === album.title;
+                  const albumTracks = getAlbumTracklist(artist.name, album);
+                  const leadTitle = getAlbumLeadTrack(album);
+
+                  return (
+                    <div
+                      key={album.title}
+                      className={`group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border p-4 transition-all ${
+                        isCurrentAlbumActive
+                          ? "bg-primary/[0.06] border-primary shadow-lg shadow-primary/10 ring-1 ring-primary/40"
+                          : "bg-card border-border hover:border-primary/30"
+                      }`}
+                    >
+                      <div
+                        onClick={() => audio.openTracklistModal(artist, album)}
+                        className="flex items-center gap-4 flex-1 cursor-pointer"
+                      >
+                        {/* Disc / Icon Art */}
+                        <div
+                          className="relative w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden"
+                          style={{
+                            backgroundColor: artist.color + "25",
+                          }}
+                        >
+                          <Disc3
+                            className={`w-6 h-6 transition-transform ${
+                              isCurrentAlbumActive && isPlaying
+                                ? "animate-[spin_4s_linear_infinite]"
+                                : "group-hover:scale-110"
+                            }`}
+                            style={{ color: artist.color }}
+                          />
+
+                          {isCurrentAlbumActive && (
+                            <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                              <div className="flex items-end gap-0.5 h-3">
+                                {[0.4, 0.9, 0.6].map((h, i) => (
+                                  <motion.span
+                                    key={i}
+                                    animate={
+                                      isPlaying
+                                        ? {
+                                            height: [
+                                              `${Math.max(3, h * 12)}px`,
+                                              `${Math.max(4, (1 - h * 0.4) * 14)}px`,
+                                              `${Math.max(3, h * 12)}px`,
+                                            ],
+                                          }
+                                        : { height: "3px" }
+                                    }
+                                    transition={{
+                                      duration: 0.5 + i * 0.1,
+                                      repeat: Infinity,
+                                    }}
+                                    className="w-0.5 rounded-full bg-primary"
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Title & Metadata */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-semibold text-foreground truncate">
+                              {album.title}
+                            </p>
+
+                            {isCurrentAlbumActive && (
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary/20 text-primary border border-primary/30 uppercase flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                {isPlaying ? "Playing" : "Paused"}
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {album.type} · {album.year} ·{" "}
+                            {album.tracks || albumTracks.length} tracks · Lead:{" "}
+                            <span className="text-foreground/80 font-medium">
+                              {leadTitle}
+                            </span>
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Card Action Buttons */}
+                      <div className="flex items-center gap-2 self-end sm:self-center flex-shrink-0">
+                        {/* Tracklist Trigger */}
+                        <button
+                          onClick={() => audio.openTracklistModal(artist, album)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground bg-secondary/60 hover:bg-secondary border border-border hover:border-primary/30 transition-colors"
+                        >
+                          <ListMusic className="w-3.5 h-3.5" />
+                          <span>Tracklist</span>
+                        </button>
+
+                        {/* Play/Listen Button */}
+                        <button
+                          onClick={() => handleListenAlbum(album)}
+                          className={`flex items-center gap-1.5 text-xs font-semibold px-3.5 py-1.5 rounded-lg transition-all ${
+                            isCurrentAlbumActive
+                              ? isPlaying
+                                ? "bg-primary text-white shadow-md shadow-primary/30"
+                                : "bg-primary/20 text-primary border border-primary/40 hover:bg-primary/30"
+                              : "text-muted-foreground hover:text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20"
+                          }`}
+                        >
+                          {isCurrentAlbumActive && isPlaying ? (
+                            <>
+                              <Pause className="w-3.5 h-3.5 fill-current" />
+                              <span>Playing</span>
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-3.5 h-3.5 fill-current" />
+                              <span>{isCurrentAlbumActive ? "Resume" : "Listen"}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
 
@@ -2655,7 +2815,8 @@ function BottomNav({
 
 // ─── App ─────────────────────────────────────────────────────────────────────
 
-export default function App() {
+function MainAppContent() {
+  const audio = useAudioPlayer();
   const [screen, setScreen] = useState<Screen>("splash");
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [selectedArtist, setSelectedArtist] = useState<Artist | null>(null);
@@ -2841,7 +3002,22 @@ export default function App() {
     : false;
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden relative">
+      {/* Global Tracklist Modal */}
+      {audio.tracklistModalData && (
+        <TracklistModal
+          artist={audio.tracklistModalData.artist}
+          album={audio.tracklistModalData.album}
+          currentPlayingAlbumTitle={audio.playingAlbum?.title || null}
+          currentTrackIndex={audio.currentTrackIndex}
+          isPlaying={audio.isPlaying}
+          onClose={audio.closeTracklistModal}
+          onSelectTrack={(album, trackIdx) => {
+            audio.playTrack(audio.tracklistModalData!.artist, album, trackIdx);
+          }}
+        />
+      )}
+
       {/* Personalization Modal when opened from dashboard "Manage" or profile "Edit Pulse" */}
       {showPersonalizationModal && (
         <PersonalizationScreen
@@ -2865,7 +3041,7 @@ export default function App() {
       />
 
       {/* Main column */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
         <PageHeader
           title={pageTitle}
           showBack={!!selectedArtist}
@@ -2879,7 +3055,7 @@ export default function App() {
             activeTab === "news" && !selectedArtist
               ? "flex flex-col overflow-hidden"
               : "overflow-y-auto scrollbar-hide"
-          }`}
+          } ${audio.playingAlbum ? "pb-32 lg:pb-24" : "pb-16 lg:pb-4"}`}
         >
           {selectedArtist ? (
             <div className="overflow-y-auto scrollbar-hide h-full">
@@ -2928,10 +3104,25 @@ export default function App() {
         </main>
       </div>
 
+      {/* Persistent Global Floating Audio Player */}
+      <PersistentAudioBar onSelectArtist={setSelectedArtist} />
+
       {/* Mobile bottom nav */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-20">
+      <div
+        className={`lg:hidden fixed inset-x-0 z-20 transition-all ${
+          audio.playingAlbum ? "bottom-20" : "bottom-0"
+        }`}
+      >
         <BottomNav activeTab={activeTab} onTab={handleTab} />
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AudioProvider>
+      <MainAppContent />
+    </AudioProvider>
   );
 }
