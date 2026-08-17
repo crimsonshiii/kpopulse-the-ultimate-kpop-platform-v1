@@ -619,7 +619,7 @@ export const COMEBACKS: Comeback[] = [
 export const NEWS: NewsItem[] = [
   {
     id: 1,
-    category: "Award",
+    category: "Tour",
     headline: "aespa sweeps 4 categories at Melon Music Awards 2024",
     time: "2h ago",
     author: "Jao Nicholas Benedicto",
