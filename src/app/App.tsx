@@ -64,6 +64,7 @@ import {
   DEFAULT_ACCOUNTS,
 } from "./data";
 import { PersonalizationScreen } from "./components/PersonalizationScreen";
+import { SafeImage } from "./components/SafeImage";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -931,15 +932,15 @@ function Sidebar({
             }}
             className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-secondary cursor-pointer transition-colors"
           >
-            <img
-              src={unsplash(
-                "1535713875002-d1ffd9b4a8bc",
-                80,
-                80,
-              )}
-              alt="Profile"
-              className="w-8 h-8 rounded-full object-cover ring-2 ring-primary ring-offset-1 ring-offset-card flex-shrink-0"
-            />
+            <div className="w-8 h-8 rounded-full overflow-hidden ring-2 ring-primary ring-offset-1 ring-offset-card flex-shrink-0">
+              <SafeImage
+                src="1535713875002-d1ffd9b4a8bc"
+                alt="Profile"
+                fallbackColor="#FF1C8E"
+                fallbackType="solo"
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-foreground truncate">
                 {personalization.username || "kpop_luna"}
@@ -1086,10 +1087,14 @@ function HomeTab({
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
       {/* Featured comeback banner */}
       <div className="relative h-52 md:h-64 rounded-2xl overflow-hidden">
-        <img
-          src={unsplash(featuredArtist.img, 1200, 500)}
+        <SafeImage
+          src={featuredArtist.img}
           alt={featured.artist}
+          fallbackColor={featured.color || "#FF1C8E"}
+          fallbackText={featured.artist}
           className="w-full h-full object-cover"
+          width={1200}
+          height={500}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent" />
         <div className="absolute inset-0 flex flex-col justify-between p-6 md:p-8">
@@ -1182,10 +1187,14 @@ function HomeTab({
                         boxShadow: `0 0 0 2px ${a.color}20`,
                       }}
                     >
-                      <img
-                        src={unsplash(a.img, 120, 120)}
+                      <SafeImage
+                        src={a.img}
                         alt={a.name}
+                        fallbackColor={a.color}
+                        fallbackText={a.name}
+                        fallbackType={a.type}
                         className="w-full h-full object-cover"
+                        width={120, 120}
                       />
                     </div>
                     <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground transition-colors truncate w-full text-center">
@@ -1291,11 +1300,17 @@ function HomeTab({
               onClick={() => onNews()}
               className="flex gap-3 bg-card rounded-xl border border-border p-3.5 text-left w-full hover:border-primary/30 transition-colors group"
             >
-              <img
-                src={unsplash(item.img, 120, 120)}
-                alt=""
-                className="w-14 h-14 rounded-lg object-cover flex-shrink-0 bg-secondary"
-              />
+              <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-secondary">
+                <SafeImage
+                  src={item.img}
+                  alt={item.headline}
+                  fallbackColor="#00B4D8"
+                  fallbackType="news"
+                  className="w-full h-full object-cover"
+                  width={120}
+                  height={120}
+                />
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
                   <CatBadge label={item.category} />
@@ -1442,9 +1457,14 @@ function DiscoverTab({
                   onClick={() => onArtist(artist)}
                   className="relative h-44 overflow-hidden cursor-pointer"
                 >
-                  <img
-                    src={unsplash(artist.img, 300, 250)}
+                  <SafeImage
+                    src={artist.img}
                     alt={artist.name}
+                    fallbackColor={artist.color}
+                    fallbackText={artist.name}
+                    fallbackType={artist.type}
+                    width={300}
+                    height={250}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div
@@ -1546,9 +1566,14 @@ function ArtistProfile({
     <div className="p-4 md:p-6 max-w-6xl mx-auto">
       {/* Wide hero */}
       <div className="relative h-56 md:h-72 rounded-2xl overflow-hidden mb-6">
-        <img
-          src={unsplash(artist.img, 1200, 400)}
+        <SafeImage
+          src={artist.img}
           alt={artist.name}
+          fallbackColor={artist.color}
+          fallbackText={artist.name}
+          fallbackType={artist.type}
+          width={1200}
+          height={400}
           className="w-full h-full object-cover"
         />
         <div
@@ -1903,9 +1928,13 @@ function ComebacksTab({
                 className="bg-card rounded-2xl border border-border overflow-hidden hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all group"
               >
                 <div className="relative h-36 overflow-hidden">
-                  <img
-                    src={unsplash(cb.img, 600, 200)}
+                  <SafeImage
+                    src={cb.img}
                     alt={cb.artist}
+                    fallbackColor={cb.color}
+                    fallbackText={cb.artist}
+                    width={600}
+                    height={200}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div
@@ -2104,11 +2133,17 @@ function NewsTab({
                   : "hover:bg-secondary/40"
               }`}
             >
-              <img
-                src={unsplash(item.img, 120, 120)}
-                alt=""
-                className="w-14 h-14 rounded-lg object-cover flex-shrink-0 bg-secondary"
-              />
+              <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-secondary">
+                <SafeImage
+                  src={item.img}
+                  alt={item.headline}
+                  fallbackColor="#00B4D8"
+                  fallbackType="news"
+                  width={120}
+                  height={120}
+                  className="w-full h-full object-cover"
+                />
+              </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
                   <CatBadge label={item.category} />
@@ -2149,9 +2184,13 @@ function NewsTab({
 
           <div className="max-w-3xl mx-auto px-4 md:px-8 py-6">
             <div className="relative h-56 md:h-72 rounded-2xl overflow-hidden mb-6">
-              <img
-                src={unsplash(selected.img, 900, 400)}
-                alt=""
+              <SafeImage
+                src={selected.img}
+                alt={selected.headline}
+                fallbackColor="#00B4D8"
+                fallbackType="news"
+                width={900}
+                height={400}
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
@@ -2308,15 +2347,17 @@ function ProfileTab({
             </div>
             <div className="px-5 pb-5 -mt-10 relative">
               <div className="flex items-end justify-between mb-4">
-                <img
-                  src={unsplash(
-                    "1535713875002-d1ffd9b4a8bc",
-                    100,
-                    100,
-                  )}
-                  alt="Profile"
-                  className="w-20 h-20 rounded-2xl object-cover ring-4 ring-card border-2 border-primary"
-                />
+                <div className="w-20 h-20 rounded-2xl overflow-hidden ring-4 ring-card border-2 border-primary">
+                  <SafeImage
+                    src="1535713875002-d1ffd9b4a8bc"
+                    alt="Profile"
+                    fallbackColor="#FF1C8E"
+                    fallbackType="solo"
+                    width={100}
+                    height={100}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <button
                   onClick={onEditPreferences}
                   className="mb-1 flex items-center gap-1.5 text-xs font-semibold text-muted-foreground border border-border px-3 py-1.5 rounded-lg hover:text-foreground hover:border-primary/40 transition-colors"
@@ -2386,9 +2427,14 @@ function ProfileTab({
                       className="w-full aspect-square rounded-xl overflow-hidden border-2 transition-transform group-hover:scale-105"
                       style={{ borderColor: a.color }}
                     >
-                      <img
-                        src={unsplash(a.img, 80, 80)}
+                      <SafeImage
+                        src={a.img}
                         alt={a.name}
+                        fallbackColor={a.color}
+                        fallbackText={a.name}
+                        fallbackType={a.type}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover"
                       />
                     </div>

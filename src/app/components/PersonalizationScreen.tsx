@@ -31,30 +31,7 @@ import {
   GENRES_LIST,
   GENERATIONS_LIST,
 } from "../data";
-
-// Unsplash / Asset Helper
-function resolveImage(id: string, w = 400, h = 300) {
-  if (!id) return "";
-  if (id.startsWith("http://") || id.startsWith("https://") || id.startsWith("data:")) {
-    return id;
-  }
-  let path = id;
-  if (path.startsWith("sset/")) {
-    path = "asset/" + path.slice(5);
-  }
-  if (
-    path.startsWith("/") ||
-    path.startsWith("asset/") ||
-    path.includes(".webp") ||
-    path.includes(".png") ||
-    path.includes(".jpg") ||
-    path.includes(".svg") ||
-    path.includes(".jpeg")
-  ) {
-    return path.startsWith("/") ? path : `/${path}`;
-  }
-  return `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format`;
-}
+import { SafeImage } from "./SafeImage";
 
 // Icon helper for genres
 function renderGenreIcon(iconName: string, color: string) {
@@ -417,9 +394,14 @@ export function PersonalizationScreen({
                     >
                       {/* Image container */}
                       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/50">
-                        <img
-                          src={resolveImage(artist.img, 300, 225)}
+                        <SafeImage
+                          src={artist.img}
                           alt={artist.name}
+                          fallbackColor={artist.color}
+                          fallbackText={artist.name}
+                          fallbackType="group"
+                          width={300}
+                          height={225}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         <div
@@ -528,9 +510,14 @@ export function PersonalizationScreen({
                     >
                       {/* Image container */}
                       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/50">
-                        <img
-                          src={resolveImage(artist.img, 300, 225)}
+                        <SafeImage
+                          src={artist.img}
                           alt={artist.name}
+                          fallbackColor={artist.color}
+                          fallbackText={artist.name}
+                          fallbackType="solo"
+                          width={300}
+                          height={225}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                         <div
