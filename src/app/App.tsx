@@ -1085,7 +1085,7 @@ function HomeTab({
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
-      {/* Featured comeback banner */}
+      {/* Featured artist comeback banner */}
       <div className="relative h-52 md:h-64 rounded-2xl overflow-hidden">
         <SafeImage
           src={featuredArtist.img}
