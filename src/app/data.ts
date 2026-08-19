@@ -177,7 +177,6 @@ export const ARTISTS: Artist[] = [
     nextComeback: "Nov 2024",
     bio: "TREASURE is a 10-member boy group formed by YG Entertainment through YG Treasure Box. Known for their energetic rap line, synchronized dance routines, and high-octane stage energy.",
   },
-  /*
   {
     id: 3,
     name: "SEVENTEEN",
@@ -263,6 +262,7 @@ export const ARTISTS: Artist[] = [
     nextComeback: "Aug 2026",
     bio: "Kiss of Life is a four-member group known for their standout 90s/2000s R&B vibe, vocal acrobatics, and refreshing live performance power.",
   },
+  /*
   {
     id: 8,
     name: "TXT",
@@ -588,51 +588,79 @@ export const DEFAULT_ACCOUNTS: UserAccount[] = [
   },
 ];
 
-// ─── Comebacks Data ──────────────────────────────────────────────────────────
+// ─── Comebacks Helper & Data ───────────────────────────────────────────────────
+
+export function calculateComebackDaysLeft(dateStr: string, referenceDate: Date = new Date()): number {
+  const target = new Date(dateStr);
+  if (isNaN(target.getTime())) return 0;
+  
+  const targetMidnight = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime();
+  const refMidnight = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate()).getTime();
+  
+  return Math.round((targetMidnight - refMidnight) / (1000 * 60 * 60 * 24));
+}
+
+export function isComebackFinished(comeback: Comeback): boolean {
+  return comeback.daysLeft <= 0 || calculateComebackDaysLeft(comeback.date) <= 0;
+}
 
 export const COMEBACKS: Comeback[] = [
   // ── Upcoming ─────────────────────────────────────────────────────────────
-  { id: 21, artist: "TXT",           title: "Setsuna Hanabi",         type: "Japan 5th Single",   date: "Aug 17, 2026", daysLeft: 1,  tracks: 2,  teaser: true,  preorder: true,  color: "#FF6B9D", img: "1619983081563-430f63602796" },
-  { id: 22, artist: "JUN. K",        title: "Your Lips",              type: "Digital Single",     date: "Aug 17, 2026", daysLeft: 1,  tracks: 1,  teaser: false, preorder: false, color: "#B06AB3", img: "1520637836993-5cce7b6b3b27" },
-  { id: 23, artist: "BOYNEXTDOOR",   title: "Boom Boom Boom",         type: "Japan Single",       date: "Aug 18, 2026", daysLeft: 2,  tracks: 2,  teaser: true,  preorder: false, color: "#FFB300", img: "1514525253161-7a46d19cd819" },
-  { id: 24, artist: "AtHeart",       title: "3!4!",                   type: "Single",             date: "Aug 19, 2026", daysLeft: 3,  tracks: 1,  teaser: false, preorder: false, color: "#FF4F8B", img: "1541367777708-7905fe3296c4" },
-  { id: 25, artist: "ZEROBASEONE",   title: "回帰LOVE",               type: "Japan Single",       date: "Aug 19, 2026", daysLeft: 3,  tracks: 2,  teaser: true,  preorder: true,  color: "#00B4D8", img: "1478737270239-2f02b77fc618" },
-  { id: 26, artist: "BIGBANG",       title: "BiiiG",                  type: "Digital Single",     date: "Aug 19, 2026", daysLeft: 3,  tracks: 1,  teaser: true,  preorder: false, color: "#F0A500", img: "1516450360452-9312f5e86fc7" },
-  { id: 27, artist: "ONEWE",         title: "面 : Unknown Atlas",     type: "3rd Full Album",     date: "Aug 19, 2026", daysLeft: 3,  tracks: 12, teaser: false, preorder: true,  color: "#4361EE", img: "1598387993441-a364f854c3e1" },
-  { id: 28, artist: "MASHIRO",       title: "24/11",                  type: "1st EP",             date: "Aug 19, 2026", daysLeft: 3,  tracks: 5,  teaser: false, preorder: false, color: "#E040FB", img: "1574169411535-1e7c8f9e1b74" },
-  { id: 29, artist: "ODD YOUTH",     title: "can't go back",          type: "Single",             date: "Aug 19, 2026", daysLeft: 3,  tracks: 1,  teaser: false, preorder: false, color: "#26C6DA", img: "1508700115892-45ecd05ae2ad" },
-  { id: 30, artist: "Tiffany Young", title: "Edge of Calm",           type: "1st Full Album",     date: "Aug 20, 2026", daysLeft: 4,  tracks: 11, teaser: true,  preorder: true,  color: "#FF8C69", img: "1493225457124-a3eb161ffa5f" },
-  { id: 31, artist: "KIM JAE JOONG", title: "THE WAVE",               type: "Single",             date: "Aug 20, 2026", daysLeft: 4,  tracks: 1,  teaser: false, preorder: false, color: "#1A73E8", img: "1524368535928-5b5e00ddc76b" },
-  { id: 32, artist: "MIMI",          title: "Bish Bash Bosh",         type: "Single",             date: "Aug 20, 2026", daysLeft: 4,  tracks: 1,  teaser: false, preorder: false, color: "#FF6F61", img: "1571019613454-1cb2f99b2d8b" },
-  { id: 33, artist: "ENHYPEN",       title: "THE SIN : BLISS",        type: "8th Mini Album",     date: "Aug 21, 2026", daysLeft: 5,  tracks: 8,  teaser: true,  preorder: true,  color: "#7B3FFF", img: "1598387993441-a364f854c3e1" },
-  { id: 34, artist: "NEXZ",          title: "SAUCIN'",                type: "4th Mini Album",     date: "Aug 24, 2026", daysLeft: 8,  tracks: 7,  teaser: false, preorder: false, color: "#FF5722", img: "1619983081563-430f63602796" },
-  { id: 35, artist: "NCT 127",       title: "BLINGY",                 type: "7th Album",          date: "Aug 24, 2026", daysLeft: 8,  tracks: 14, teaser: true,  preorder: true,  color: "#00A36C", img: "1520637836993-5cce7b6b3b27" },
-  { id: 36, artist: "ALPHA DRIVE",   title: "ALPHA DRIVE ONE",        type: "2nd Mini Album",     date: "Aug 24, 2026", daysLeft: 8,  tracks: 6,  teaser: false, preorder: false, color: "#E53935", img: "1541367777708-7905fe3296c4" },
-  { id: 37, artist: "TUIDE",         title: "TUIDE",                  type: "1st EP",             date: "Aug 24, 2026", daysLeft: 8,  tracks: 5,  teaser: false, preorder: false, color: "#43A047", img: "1478737270239-2f02b77fc618" },
-  { id: 38, artist: "SF9",           title: "TENACITY",               type: "2nd Album",          date: "Aug 26, 2026", daysLeft: 10, tracks: 12, teaser: false, preorder: true,  color: "#E82020", img: "1514525253161-7a46d19cd819" },
-  { id: 39, artist: "HITGS",         title: "HITGS",                  type: "Digital Single",     date: "Aug 27, 2026", daysLeft: 11, tracks: 1,  teaser: false, preorder: false, color: "#9C27B0", img: "1516450360452-9312f5e86fc7" },
-  { id: 40, artist: "TAEMIN",        title: "PHASE 1 : Soft Violence", type: "Album",             date: "Aug 31, 2026", daysLeft: 15, tracks: 10, teaser: true,  preorder: true,  color: "#5B8DB8", img: "1574169411535-1e7c8f9e1b74" },
-  // ── Recently Released ────────────────────────────────────────────────────
-  { id: 1,  artist: "Stray Kids",    title: "SKZ-REPLAY 2026 Pt.1",  type: "Album",              date: "Aug 1, 2026",  daysLeft: -15, tracks: 18, teaser: false, preorder: false, color: "#FF4500", img: "1524368535928-5b5e00ddc76b" },
-  { id: 2,  artist: "DINO",          title: "吉BOARD",                type: "1st Mini Album",     date: "Aug 3, 2026",  daysLeft: -13, tracks: 6,  teaser: false, preorder: false, color: "#FF9800", img: "1508700115892-45ecd05ae2ad" },
-  { id: 3,  artist: "Red Velvet",    title: "Velvet Summer",          type: "Mini Album",         date: "Aug 3, 2026",  daysLeft: -13, tracks: 6,  teaser: false, preorder: false, color: "#FF5FA0", img: "1493225457124-a3eb161ffa5f" },
-  { id: 4,  artist: "KISS OF LIFE",  title: "SWEAT",                  type: "3rd Single",         date: "Aug 4, 2026",  daysLeft: -12, tracks: 1,  teaser: false, preorder: false, color: "#FF1744", img: "1619983081563-430f63602796" },
-  { id: 5,  artist: "TWS",           title: "SODA SODA",              type: "Japan Single",       date: "Aug 4, 2026",  daysLeft: -12, tracks: 2,  teaser: false, preorder: false, color: "#00BCD4", img: "1520637836993-5cce7b6b3b27" },
-  { id: 6,  artist: "DAYOUNG X JAY PARK", title: "FLIRTY",           type: "Single",             date: "Aug 4, 2026",  daysLeft: -12, tracks: 1,  teaser: false, preorder: false, color: "#FF6E40", img: "1541367777708-7905fe3296c4" },
-  { id: 7,  artist: "HUH JIWON",     title: "The Calling",            type: "Single",             date: "Aug 5, 2026",  daysLeft: -11, tracks: 1,  teaser: false, preorder: false, color: "#AB47BC", img: "1478737270239-2f02b77fc618" },
-  { id: 8,  artist: "AEN",           title: "A NEW ERA OF NOW",       type: "1st EP",             date: "Aug 5, 2026",  daysLeft: -11, tracks: 5,  teaser: false, preorder: false, color: "#42A5F5", img: "1514525253161-7a46d19cd819" },
-  { id: 9,  artist: "WHIB",          title: "CHERRY PIE",             type: "2nd Mini Album",     date: "Aug 5, 2026",  daysLeft: -11, tracks: 6,  teaser: false, preorder: false, color: "#F06292", img: "1571019613454-1cb2f99b2d8b" },
-  { id: 10, artist: "ARTMS",         title: "Hyper-Ego",              type: "2nd Mini Album",     date: "Aug 7, 2026",  daysLeft: -9,  tracks: 5,  teaser: false, preorder: false, color: "#C44FFF", img: "1598387993441-a364f854c3e1" },
-  { id: 11, artist: "DAWN",          title: "Too Much",               type: "Single",             date: "Aug 7, 2026",  daysLeft: -9,  tracks: 1,  teaser: false, preorder: false, color: "#FF7043", img: "1508700115892-45ecd05ae2ad" },
-  { id: 12, artist: "Stray Kids",    title: "THIS & THAT",            type: "Mini Album",         date: "Aug 7, 2026",  daysLeft: -9,  tracks: 7,  teaser: false, preorder: false, color: "#FF4500", img: "1516450360452-9312f5e86fc7" },
-  { id: 13, artist: "KiiiKiii",      title: "WhyKiiiKiii",            type: "3rd EP",             date: "Aug 10, 2026", daysLeft: -6,  tracks: 5,  teaser: false, preorder: false, color: "#EC407A", img: "1493225457124-a3eb161ffa5f" },
-  { id: 14, artist: "WayV",          title: "Vision Wings",           type: "8th Mini Album",     date: "Aug 10, 2026", daysLeft: -6,  tracks: 6,  teaser: false, preorder: false, color: "#00C4CC", img: "1574169411535-1e7c8f9e1b74" },
-  { id: 15, artist: "MIYEON",        title: "RUN AWAY",               type: "Single",             date: "Aug 10, 2026", daysLeft: -6,  tracks: 1,  teaser: false, preorder: false, color: "#7E57C2", img: "1619983081563-430f63602796" },
-  { id: 16, artist: "JEONG EUNJI",   title: "Summer, I",              type: "5th Mini Album",     date: "Aug 11, 2026", daysLeft: -5,  tracks: 6,  teaser: false, preorder: false, color: "#FF8A65", img: "1520637836993-5cce7b6b3b27" },
-  { id: 17, artist: "Hearts2Hearts", title: "ICONIC HEART",           type: "Japan Single",       date: "Aug 12, 2026", daysLeft: -4,  tracks: 2,  teaser: false, preorder: false, color: "#E91E63", img: "1541367777708-7905fe3296c4" },
-  { id: 18, artist: "AxMxP",         title: "HELLO AxMxP",            type: "2nd Mini Album",     date: "Aug 12, 2026", daysLeft: -4,  tracks: 6,  teaser: false, preorder: false, color: "#29B6F6", img: "1478737270239-2f02b77fc618" },
-  { id: 19, artist: "Splayit",       title: "SPLAY : CHAPTER 01",     type: "EP",                 date: "Aug 13, 2026", daysLeft: -3,  tracks: 5,  teaser: false, preorder: false, color: "#66BB6A", img: "1514525253161-7a46d19cd819" },
-  { id: 20, artist: "HYNN",          title: "Traces of Summer",       type: "EP",                 date: "Aug 13, 2026", daysLeft: -3,  tracks: 4,  teaser: false, preorder: false, color: "#FFA726", img: "1571019613454-1cb2f99b2d8b" },
+  { id: 24, artist: "AtHeart",       title: "3!4!",                   type: "Single",             date: "Aug 19, 2026", daysLeft: 1,  tracks: 1,  teaser: false, preorder: false, color: "#FF4F8B", img: "1541367777708-7905fe3296c4" },
+  { id: 25, artist: "ZEROBASEONE",   title: "回帰LOVE",               type: "Japan Single",       date: "Aug 19, 2026", daysLeft: 1,  tracks: 2,  teaser: true,  preorder: true,  color: "#00B4D8", img: "1478737270239-2f02b77fc618" },
+  { id: 26, artist: "BIGBANG",       title: "BiiiG",                  type: "Digital Single",     date: "Aug 19, 2026", daysLeft: 1,  tracks: 1,  teaser: true,  preorder: false, color: "#F0A500", img: "1516450360452-9312f5e86fc7" },
+  { id: 27, artist: "ONEWE",         title: "面 : Unknown Atlas",     type: "3rd Full Album",     date: "Aug 19, 2026", daysLeft: 1,  tracks: 12, teaser: false, preorder: true,  color: "#4361EE", img: "1598387993441-a364f854c3e1" },
+  { id: 28, artist: "MASHIRO",       title: "24/11",                  type: "1st EP",             date: "Aug 19, 2026", daysLeft: 1,  tracks: 5,  teaser: false, preorder: false, color: "#E040FB", img: "1574169411535-1e7c8f9e1b74" },
+  { id: 29, artist: "ODD YOUTH",     title: "can't go back",          type: "Single",             date: "Aug 19, 2026", daysLeft: 1,  tracks: 1,  teaser: false, preorder: false, color: "#26C6DA", img: "1508700115892-45ecd05ae2ad" },
+  { id: 30, artist: "Tiffany Young", title: "Edge of Calm",           type: "1st Full Album",     date: "Aug 20, 2026", daysLeft: 2,  tracks: 11, teaser: true,  preorder: true,  color: "#FF8C69", img: "1493225457124-a3eb161ffa5f" },
+  { id: 31, artist: "KIM JAE JOONG", title: "THE WAVE",               type: "Single",             date: "Aug 20, 2026", daysLeft: 2,  tracks: 1,  teaser: false, preorder: false, color: "#1A73E8", img: "1524368535928-5b5e00ddc76b" },
+  { id: 32, artist: "MIMI",          title: "Bish Bash Bosh",         type: "Single",             date: "Aug 20, 2026", daysLeft: 2,  tracks: 1,  teaser: false, preorder: false, color: "#FF6F61", img: "1571019613454-1cb2f99b2d8b" },
+  { id: 33, artist: "ENHYPEN",       title: "THE SIN : BLISS",        type: "8th Mini Album",     date: "Aug 21, 2026", daysLeft: 3,  tracks: 8,  teaser: true,  preorder: true,  color: "#7B3FFF", img: "1598387993441-a364f854c3e1" },
+  { id: 34, artist: "NEXZ",          title: "SAUCIN'",                type: "4th Mini Album",     date: "Aug 24, 2026", daysLeft: 6,  tracks: 7,  teaser: false, preorder: false, color: "#FF5722", img: "1619983081563-430f63602796" },
+  { id: 35, artist: "NCT 127",       title: "BLINGY",                 type: "7th Album",          date: "Aug 24, 2026", daysLeft: 6,  tracks: 14, teaser: true,  preorder: true,  color: "#00A36C", img: "1520637836993-5cce7b6b3b27" },
+  { id: 36, artist: "ALPHA DRIVE",   title: "ALPHA DRIVE ONE",        type: "2nd Mini Album",     date: "Aug 24, 2026", daysLeft: 6,  tracks: 6,  teaser: false, preorder: false, color: "#E53935", img: "1541367777708-7905fe3296c4" },
+  { id: 37, artist: "TUIDE",         title: "TUIDE",                  type: "1st EP",             date: "Aug 24, 2026", daysLeft: 6,  tracks: 5,  teaser: false, preorder: false, color: "#43A047", img: "1478737270239-2f02b77fc618" },
+  { id: 38, artist: "SF9",           title: "TENACITY",               type: "2nd Album",          date: "Aug 26, 2026", daysLeft: 8,  tracks: 12, teaser: false, preorder: true,  color: "#E82020", img: "1514525253161-7a46d19cd819" },
+  { id: 39, artist: "HITGS",         title: "HITGS",                  type: "Digital Single",     date: "Aug 27, 2026", daysLeft: 9,  tracks: 1,  teaser: false, preorder: false, color: "#9C27B0", img: "1516450360452-9312f5e86fc7" },
+  { id: 40, artist: "TAEMIN",        title: "PHASE 1 : Soft Violence", type: "Album",             date: "Aug 31, 2026", daysLeft: 13, tracks: 10, teaser: true,  preorder: true,  color: "#5B8DB8", img: "1574169411535-1e7c8f9e1b74" },
+  { id: 41, artist: "CHUNG HA",       title: "México",                 type: "Digital Single",     date: "Sep 1, 2026",  daysLeft: 14, tracks: 1,  teaser: true,  preorder: false, color: "#E040FB", img: "1534528741775-53994a69daeb" },
+  { id: 42, artist: "82MAJOR",        title: "HEAT",                   type: "2nd Single",         date: "Sep 1, 2026",  daysLeft: 14, tracks: 2,  teaser: true,  preorder: true,  color: "#FF5722", img: "1516450360452-9312f5e86fc7" },
+  { id: 43, artist: "TUNEXX",         title: "BLUE MODE",              type: "2nd Mini Album",     date: "Sep 2, 2026",  daysLeft: 15, tracks: 6,  teaser: true,  preorder: true,  color: "#00B4D8", img: "1508700115892-45ecd05ae2ad" },
+  { id: 44, artist: "izna",           title: "HANDLE WITH CARE",       type: "Japan 1st Mini",     date: "Sep 2, 2026",  daysLeft: 15, tracks: 5,  teaser: true,  preorder: true,  color: "#FF69B4", img: "1541367777708-7905fe3296c4" },
+  { id: 45, artist: "MONSTA X",       title: "The Phase",              type: "Mini Album",         date: "Sep 4, 2026",  daysLeft: 17, tracks: 6,  teaser: true,  preorder: true,  color: "#D32F2F", img: "1598387993441-a364f854c3e1" },
+  { id: 46, artist: "EVAN",           title: "DEATH OF ME",            type: "1st Mini Album",     date: "Sep 7, 2026",  daysLeft: 20, tracks: 6,  teaser: true,  preorder: true,  color: "#8E24AA", img: "1534528741775-53994a69daeb" },
+  { id: 47, artist: "VERIVERY",       title: "CONFETTI",               type: "8th Mini Album",     date: "Sep 7, 2026",  daysLeft: 20, tracks: 6,  teaser: false, preorder: true,  color: "#7B1FA2", img: "1478737270239-2f02b77fc618" },
+  { id: 48, artist: "MINHO",          title: "Make It Hot",            type: "2nd Mini Album",     date: "Sep 7, 2026",  daysLeft: 20, tracks: 5,  teaser: true,  preorder: true,  color: "#FF3D00", img: "1520637836993-5cce7b6b3b27" },
+  { id: 49, artist: "&TEAM",          title: "Mark on Me",             type: "Mini Album",         date: "Sep 8, 2026",  daysLeft: 21, tracks: 6,  teaser: true,  preorder: true,  color: "#1976D2", img: "1514525253161-7a46d19cd819" },
+  { id: 50, artist: "In A Minute",    title: "In A Minute",            type: "Debut Single",       date: "Sep 9, 2026",  daysLeft: 22, tracks: 2,  teaser: false, preorder: false, color: "#009688", img: "1571019613454-1cb2f99b2d8b" },
+  { id: 51, artist: "ONEW",           title: "Kakera -Unmei no Piece-",type: "Japan 4th Single",   date: "Sep 16, 2026", daysLeft: 29, tracks: 3,  teaser: true,  preorder: true,  color: "#3F51B5", img: "1574169411535-1e7c8f9e1b74" },
+  { id: 52, artist: "CLOSE YOUR EYES",title: "New Album",              type: "Album",              date: "Sep 25, 2026", daysLeft: 38, tracks: 6,  teaser: false, preorder: false, color: "#2E7D32", img: "1516450360452-9312f5e86fc7" },
+  { id: 53, artist: "BOYNEXTDOOR",   title: "HOME",                   type: "1st Studio Repackage", date: "Sep 28, 2026", daysLeft: 41, tracks: 12, teaser: true, preorder: true,  color: "#FFB300", img: "1619983081563-430f63602796" },
+  { id: 54, artist: "XngHan&Xoul",    title: "XngHan&Xoul",            type: "Japan Debut Single", date: "Sep 30, 2026", daysLeft: 43, tracks: 2,  teaser: false, preorder: true,  color: "#607D8B", img: "1493225457124-a3eb161ffa5f" },
+  // ── Recently Released (Finished Comebacks) ─────────────────────────────────
+  { id: 23, artist: "BOYNEXTDOOR",   title: "Boom Boom Boom",         type: "Japan Single",       date: "Aug 18, 2026", daysLeft: 0,  tracks: 2,  teaser: false, preorder: false, color: "#FFB300", img: "1514525253161-7a46d19cd819" },
+  { id: 21, artist: "TXT",           title: "Setsuna Hanabi",         type: "Japan 5th Single",   date: "Aug 17, 2026", daysLeft: 0,  tracks: 2,  teaser: false, preorder: false, color: "#FF6B9D", img: "1619983081563-430f63602796" },
+  { id: 22, artist: "JUN. K",        title: "Your Lips",              type: "Digital Single",     date: "Aug 17, 2026", daysLeft: 0,  tracks: 1,  teaser: false, preorder: false, color: "#B06AB3", img: "1520637836993-5cce7b6b3b27" },
+  { id: 19, artist: "Splayit",       title: "SPLAY : CHAPTER 01",     type: "EP",                 date: "Aug 13, 2026", daysLeft: -5,  tracks: 5,  teaser: false, preorder: false, color: "#66BB6A", img: "1514525253161-7a46d19cd819" },
+  { id: 20, artist: "HYNN",          title: "Traces of Summer",       type: "EP",                 date: "Aug 13, 2026", daysLeft: -5,  tracks: 4,  teaser: false, preorder: false, color: "#FFA726", img: "1571019613454-1cb2f99b2d8b" },
+  { id: 17, artist: "Hearts2Hearts", title: "ICONIC HEART",           type: "Japan Single",       date: "Aug 12, 2026", daysLeft: -6,  tracks: 2,  teaser: false, preorder: false, color: "#E91E63", img: "1541367777708-7905fe3296c4" },
+  { id: 18, artist: "AxMxP",         title: "HELLO AxMxP",            type: "2nd Mini Album",     date: "Aug 12, 2026", daysLeft: -6,  tracks: 6,  teaser: false, preorder: false, color: "#29B6F6", img: "1478737270239-2f02b77fc618" },
+  { id: 16, artist: "JEONG EUNJI",   title: "Summer, I",              type: "5th Mini Album",     date: "Aug 11, 2026", daysLeft: -7,  tracks: 6,  teaser: false, preorder: false, color: "#FF8A65", img: "1520637836993-5cce7b6b3b27" },
+  { id: 13, artist: "KiiiKiii",      title: "WhyKiiiKiii",            type: "3rd EP",             date: "Aug 10, 2026", daysLeft: -8,  tracks: 5,  teaser: false, preorder: false, color: "#EC407A", img: "1493225457124-a3eb161ffa5f" },
+  { id: 14, artist: "WayV",          title: "Vision Wings",           type: "8th Mini Album",     date: "Aug 10, 2026", daysLeft: -8,  tracks: 6,  teaser: false, preorder: false, color: "#00C4CC", img: "1574169411535-1e7c8f9e1b74" },
+  { id: 15, artist: "MIYEON",        title: "RUN AWAY",               type: "Single",             date: "Aug 10, 2026", daysLeft: -8,  tracks: 1,  teaser: false, preorder: false, color: "#7E57C2", img: "1619983081563-430f63602796" },
+  { id: 10, artist: "ARTMS",         title: "Hyper-Ego",              type: "2nd Mini Album",     date: "Aug 7, 2026",  daysLeft: -11, tracks: 5,  teaser: false, preorder: false, color: "#C44FFF", img: "1598387993441-a364f854c3e1" },
+  { id: 11, artist: "DAWN",          title: "Too Much",               type: "Single",             date: "Aug 7, 2026",  daysLeft: -11, tracks: 1,  teaser: false, preorder: false, color: "#FF7043", img: "1508700115892-45ecd05ae2ad" },
+  { id: 12, artist: "Stray Kids",    title: "THIS & THAT",            type: "Mini Album",         date: "Aug 7, 2026",  daysLeft: -11, tracks: 7,  teaser: false, preorder: false, color: "#FF4500", img: "1516450360452-9312f5e86fc7" },
+  { id: 7,  artist: "HUH JIWON",     title: "The Calling",            type: "Single",             date: "Aug 5, 2026",  daysLeft: -13, tracks: 1,  teaser: false, preorder: false, color: "#AB47BC", img: "1478737270239-2f02b77fc618" },
+  { id: 8,  artist: "AEN",           title: "A NEW ERA OF NOW",       type: "1st EP",             date: "Aug 5, 2026",  daysLeft: -13, tracks: 5,  teaser: false, preorder: false, color: "#42A5F5", img: "1514525253161-7a46d19cd819" },
+  { id: 9,  artist: "WHIB",          title: "CHERRY PIE",             type: "2nd Mini Album",     date: "Aug 5, 2026",  daysLeft: -13, tracks: 6,  teaser: false, preorder: false, color: "#F06292", img: "1571019613454-1cb2f99b2d8b" },
+  { id: 4,  artist: "KISS OF LIFE",  title: "SWEAT",                  type: "3rd Single",         date: "Aug 4, 2026",  daysLeft: -14, tracks: 1,  teaser: false, preorder: false, color: "#FF1744", img: "1619983081563-430f63602796" },
+  { id: 5,  artist: "TWS",           title: "SODA SODA",              type: "Japan Single",       date: "Aug 4, 2026",  daysLeft: -14, tracks: 2,  teaser: false, preorder: false, color: "#00BCD4", img: "1520637836993-5cce7b6b3b27" },
+  { id: 6,  artist: "DAYOUNG X JAY PARK", title: "FLIRTY",           type: "Single",             date: "Aug 4, 2026",  daysLeft: -14, tracks: 1,  teaser: false, preorder: false, color: "#FF6E40", img: "1541367777708-7905fe3296c4" },
+  { id: 2,  artist: "DINO",          title: "吉BOARD",                type: "1st Mini Album",     date: "Aug 3, 2026",  daysLeft: -15, tracks: 6,  teaser: false, preorder: false, color: "#FF9800", img: "1508700115892-45ecd05ae2ad" },
+  { id: 3,  artist: "Red Velvet",    title: "Velvet Summer",          type: "Mini Album",         date: "Aug 3, 2026",  daysLeft: -15, tracks: 6,  teaser: false, preorder: false, color: "#FF5FA0", img: "1493225457124-a3eb161ffa5f" },
+  { id: 1,  artist: "Stray Kids",    title: "SKZ-REPLAY 2026 Pt.1",  type: "Album",              date: "Aug 1, 2026",  daysLeft: -17, tracks: 18, teaser: false, preorder: false, color: "#FF4500", img: "1524368535928-5b5e00ddc76b" },
 ];
 
 // ─── News Data ───────────────────────────────────────────────────────────────
@@ -829,11 +857,25 @@ export const aespaDiscography: DiscographyItem[] = [
     tracks: 1,
     leadTrack: "Next Level",
     youtubeVideoId: "4TWR90KJl84", // aespa 'Next Level' Official MV
-    spotifyUrl: "https://open.spotify.com/track/2zrhoDbzBVN4umpeN9j161",
+    spotifyUrl: "https://open.spotify.com/album/2CzbrboOLzeRoaaH1N5K0N",
     appleMusicUrl: "https://music.apple.com/album/next-level-single/1566861219",
     youtubeMusicUrl: "https://music.youtube.com/watch?v=4TWR90KJl84",
     tracklist: [
-      { num: 1, title: "Next Level", duration: "3:41", isTitle: true, youtubeVideoId: "4TWR90KJl84" },
+      { num: 1, title: "Next Level", duration: "3:56", isTitle: true, youtubeVideoId: "4TWR90KJl84" },
+    ],
+  },
+  {
+    title: "Forever",
+    type: "Digital Single",
+    year: "2021",
+    tracks: 1,
+    leadTrack: "Forever",
+    youtubeVideoId: "wog1R1d4zls", // aespa 'Next Level' Official MV
+    spotifyUrl: "https://open.spotify.com/album/3CExk4WgPxe0lOwoOhuMWj",
+    appleMusicUrl: "https://music.apple.com/album/next-level-single/1566861219",
+    youtubeMusicUrl: "https://music.youtube.com/watch?v=4TWR90KJl84",
+    tracklist: [
+      { num: 1, title: "Next Level", duration: "5:06", isTitle: true, youtubeVideoId: "wog1R1d4zls" },
     ],
   },
   {
@@ -1453,6 +1495,35 @@ export function getAlbumLeadTrack(album: DiscographyItem): string {
   return album.title;
 }
 
+export const txtDiscography: DiscographyItem[] = [
+  {
+    title: "Setsuna Hanabi (刹那花火)",
+    type: "Japan 5th Single",
+    year: "2026",
+    tracks: 2,
+    leadTrack: "Setsuna Hanabi",
+    youtubeVideoId: "D8VEhcPeSlc",
+    spotifyUrl: "https://open.spotify.com/album/txt_setsuna_hanabi",
+    tracklist: [
+      { num: 1, title: "Setsuna Hanabi (刹那花火)", duration: "3:12", isTitle: true, youtubeVideoId: "D8VEhcPeSlc" },
+      { num: 2, title: "Setsuna Hanabi (Instrumental)", duration: "3:12" },
+    ],
+  },
+  {
+    title: "The Name Chapter: FREEFALL",
+    type: "3rd Full Album",
+    year: "2023",
+    tracks: 9,
+    leadTrack: "Chasing That Feeling",
+    youtubeVideoId: "X_U2Z6K3bXw",
+    tracklist: [
+      { num: 1, title: "Chasing That Feeling", duration: "3:02", isTitle: true, youtubeVideoId: "X_U2Z6K3bXw" },
+      { num: 2, title: "Growing Pain", duration: "3:20" },
+      { num: 3, title: "Back for More (TXT Ver.)", duration: "2:11" },
+    ],
+  },
+];
+
 export const ARTIST_DISCOGRAPHIES: Record<string, DiscographyItem[]> = {
   aespa: aespaDiscography,
   TREASURE: treasureDiscography,
@@ -1461,6 +1532,7 @@ export const ARTIST_DISCOGRAPHIES: Record<string, DiscographyItem[]> = {
   IVE: iveDiscography,
   TWICE: twiceDiscography,
   "Kiss of Life": kissOfLifeDiscography,
+  TXT: txtDiscography,
 };
 
 // ─── Artist Schedules ────────────────────────────────────────────────────────

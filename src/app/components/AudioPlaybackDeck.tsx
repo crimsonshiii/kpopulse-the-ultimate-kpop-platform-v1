@@ -21,6 +21,7 @@ import {
   getAlbumTracklist,
   getAlbumLeadTrack,
 } from "../data";
+import { RealMusicEmbedPlayer } from "./RealMusicEmbedPlayer";
 
 interface AudioPlaybackDeckProps {
   artist: Artist;

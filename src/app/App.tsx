@@ -74,6 +74,8 @@ import {
   DEFAULT_ACCOUNTS,
   getAlbumTracklist,
   getAlbumLeadTrack,
+  calculateComebackDaysLeft,
+  isComebackFinished,
 } from "./data";
 import { PersonalizationScreen } from "./components/PersonalizationScreen";
 import { SafeImage } from "./components/SafeImage";
@@ -829,7 +831,7 @@ function Sidebar({
   personalization: UserPersonalization;
 }) {
   const upcoming = COMEBACKS.filter(
-    (c) => c.daysLeft > 0,
+    (c) => !isComebackFinished(c),
   ).slice(0, 2);
 
   return (
@@ -1080,15 +1082,15 @@ function HomeTab({
   // Prioritize favorite artist comebacks
   const favoriteComeback = COMEBACKS.find(
     (c) =>
-      c.daysLeft > 0 &&
+      !isComebackFinished(c) &&
       (personalization.favoriteGroups.includes(c.artist) ||
         personalization.favoriteSoloists.includes(c.artist))
   );
 
   const featured =
     favoriteComeback ??
-    COMEBACKS.find((c) => c.daysLeft > 0 && ARTISTS.some((a) => a.name === c.artist)) ??
-    COMEBACKS.find((c) => c.daysLeft > 0) ??
+    COMEBACKS.find((c) => !isComebackFinished(c) && ARTISTS.some((a) => a.name === c.artist)) ??
+    COMEBACKS.find((c) => !isComebackFinished(c)) ??
     COMEBACKS[0];
 
   const featuredArtist =
@@ -1584,6 +1586,15 @@ function ArtistProfile({
   // Global Background Audio Playback State
   const audio = useAudioPlayer();
   const isCurrentArtistPlaying = audio.playingArtist?.name === artist.name;
+  const isInDiscography = isCurrentArtistPlaying && tab === "disco";
+
+  useEffect(() => {
+    audio.setIsInDiscographyView(isInDiscography);
+    return () => {
+      audio.setIsInDiscographyView(false);
+    };
+  }, [isInDiscography, audio]);
+
   const playingAlbum = isCurrentArtistPlaying ? audio.playingAlbum : null;
   const currentTrackIndex = audio.currentTrackIndex;
   const isPlaying = audio.isPlaying;
@@ -2027,10 +2038,11 @@ function ComebacksTab({
   ]);
 
   const filteredComebacks = COMEBACKS.filter((c) => {
+    const finished = isComebackFinished(c);
     if (filter === "favorites") {
       return followedNames.has(c.artist);
     }
-    return filter === "upcoming" ? c.daysLeft > 0 : c.daysLeft <= 0;
+    return filter === "upcoming" ? !finished : finished;
   });
 
   return (
@@ -2081,6 +2093,8 @@ function ComebacksTab({
           {filteredComebacks.map((cb) => {
             const isFollowed = followedNames.has(cb.artist);
             const artistObj = ARTISTS.find((a) => a.name === cb.artist);
+            const isFinished = isComebackFinished(cb);
+            const daysRemaining = calculateComebackDaysLeft(cb.date);
 
             return (
               <div
@@ -2108,11 +2122,15 @@ function ComebacksTab({
                       <span className="text-[10px] font-mono uppercase tracking-wider bg-black/50 text-white px-2 py-0.5 rounded-full">
                         {cb.type}
                       </span>
-                      {cb.teaser && (
+                      {isFinished ? (
+                        <span className="text-[10px] font-mono uppercase tracking-wider bg-emerald-500/90 text-white px-2 py-0.5 rounded-full font-bold">
+                          Out Now
+                        </span>
+                      ) : cb.teaser ? (
                         <span className="text-[10px] font-mono uppercase tracking-wider bg-primary/80 text-white px-2 py-0.5 rounded-full">
                           Teaser Out
                         </span>
-                      )}
+                      ) : null}
                       {isFollowed && (
                         <span className="text-[10px] font-mono uppercase tracking-wider bg-yellow-400/90 text-black font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
                           ⭐ Following
@@ -2153,8 +2171,8 @@ function ComebacksTab({
                         className="text-xs font-mono font-bold"
                         style={{ color: cb.color }}
                       >
-                        {cb.daysLeft > 0
-                          ? `${cb.daysLeft}d left`
+                        {!isFinished && daysRemaining > 0
+                          ? `${daysRemaining}d left`
                           : "Released"}
                       </span>
                     </div>
@@ -2165,9 +2183,9 @@ function ComebacksTab({
                       className="h-full rounded-full transition-all"
                       style={{
                         width:
-                          cb.daysLeft <= 0
+                          isFinished
                             ? "100%"
-                            : `${Math.max(5, 100 - (cb.daysLeft / 50) * 100)}%`,
+                            : `${Math.max(5, 100 - (Math.max(0, daysRemaining) / 50) * 100)}%`,
                         backgroundColor: cb.color,
                       }}
                     />
@@ -2186,7 +2204,15 @@ function ComebacksTab({
                           Artist
                         </button>
                       )}
-                      {cb.preorder ? (
+                      {isFinished ? (
+                        <button
+                          onClick={() => artistObj && onArtist(artistObj)}
+                          className="text-xs text-white px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1.5 transition-opacity hover:opacity-80"
+                          style={{ backgroundColor: cb.color }}
+                        >
+                          <Play className="w-3 h-3 fill-current" /> Stream Now
+                        </button>
+                      ) : cb.preorder ? (
                         <button
                           className="text-xs text-white px-3 py-1.5 rounded-lg font-semibold transition-opacity hover:opacity-80"
                           style={{ backgroundColor: cb.color }}
@@ -3055,7 +3081,7 @@ function MainAppContent() {
             activeTab === "news" && !selectedArtist
               ? "flex flex-col overflow-hidden"
               : "overflow-y-auto scrollbar-hide"
-          } ${audio.playingAlbum ? "pb-32 lg:pb-24" : "pb-16 lg:pb-4"}`}
+          } ${audio.playingAlbum ? "pb-44 lg:pb-28" : "pb-24 lg:pb-8"}`}
         >
           {selectedArtist ? (
             <div className="overflow-y-auto scrollbar-hide h-full">
