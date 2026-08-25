@@ -1127,18 +1127,18 @@ function HomeTab({
               {featured.date}
             </span>
           </div>
-          <div className="max-w-lg">
+          <div className="max-w-2xl lg:max-w-3xl min-w-0">
             <p className="text-[10px] text-white/50 uppercase tracking-widest font-mono mb-1">
               {featured.type} · {featured.artist}
             </p>
-            <h2 className="font-display text-4xl md:text-5xl font-black text-white leading-tight">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-black text-white leading-tight truncate">
               {featured.title}
             </h2>
-            <p className="text-white/60 text-sm mt-2">
+            <p className="text-white/60 text-sm mt-1.5">
               {featured.tracks} tracks · {featured.daysLeft}{" "}
               days away
             </p>
-            <div className="flex gap-3 mt-5">
+            <div className="flex gap-3 mt-4">
               <button
                 className="flex items-center gap-2 bg-primary text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-primary/90 transition-colors"
                 style={{
@@ -2137,8 +2137,8 @@ function ComebacksTab({
                         </span>
                       )}
                     </div>
-                    <div>
-                      <h3 className="font-display text-xl font-black text-white">
+                    <div className="min-w-0">
+                      <h3 className="font-display text-lg sm:text-xl font-black text-white truncate">
                         {cb.title}
                       </h3>
                       <p

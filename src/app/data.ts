@@ -822,12 +822,15 @@ export const aespaDiscography: DiscographyItem[] = [
     appleMusicUrl: "https://music.apple.com/album/girls-the-2nd-mini-album-ep/1628169752",
     youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_m5X8j2p4",
     tracklist: [
-      { num: 1, title: "Girls", duration: "4:00", isTitle: true, youtubeVideoId: "dYRITmpFbJ4" },
-      { num: 2, title: "Illusion", duration: "3:15", youtubeVideoId: "Bjzp6v8x1u8" },
-      { num: 3, title: "Lingo", duration: "2:36", youtubeVideoId: "w7hK5s5p8aE" },
-      { num: 4, title: "Life's Too Short (English Ver.)", duration: "2:58", hasMv: true, youtubeVideoId: "z2Ah0pvh9x8" },
-      { num: 5, title: "ICU (쉬어가도 돼)", duration: "3:41", youtubeVideoId: "K2O5m3z4J8o" },
-      { num: 6, title: "Life's Too Short (Korean Ver.)", duration: "2:58", youtubeVideoId: "f4V3j7y9K0k" },
+      { num: 1, title: "Girls", duration: "4:29", isTitle: true, youtubeVideoId: "dYRITmpFbJ4" },
+      { num: 2, title: "Illusion", duration: "3:29", youtubeVideoId: "BpCvYeK5hcE" },
+      { num: 3, title: "Lingo", duration: "2:36", youtubeVideoId: "rxtdwssXyOs" },
+      { num: 4, title: "Life's Too Short (English Ver.)", duration: "2:58", hasMv: true, youtubeVideoId: "z2ZjutyxmjA" },
+      { num: 5, title: "ICU (쉬어가도 돼)", duration: "3:41", youtubeVideoId: "aGV_8CYCN3g" },
+      { num: 6, title: "Life's Too Short (Korean Ver.)", duration: "2:58", youtubeVideoId: "i2VGa-ETiM4" },
+      { num: 7, title: "Black Mamba", duration: "3:50", hasMv: true, youtubeVideoId: "ZeerrnuLi5E" },
+      { num: 8, title: "Forever", duration: "5:06", hasMv: true, youtubeVideoId: "wog1R1d4zls" },
+      { num: 9, title: "Dreams Come True", duration: "3:41", hasMv: true, youtubeVideoId: "H69tJmsgd9I" },
     ],
   },
   {
@@ -841,13 +844,12 @@ export const aespaDiscography: DiscographyItem[] = [
     appleMusicUrl: "https://music.apple.com/album/savage-the-1st-mini-album/1587399850",
     youtubeMusicUrl: "https://music.youtube.com/playlist?list=OLAK5uy_n6T2p9r",
     tracklist: [
-      { num: 1, title: "aenergy", duration: "2:27", youtubeVideoId: "X_U2Z6K3bXw" },
-      { num: 2, title: "Savage", duration: "3:58", isTitle: true, youtubeVideoId: "WPdWvnAAurg" },
-      { num: 3, title: "I'll Make You Cry", duration: "3:34", youtubeVideoId: "rNnFh2y0f8o" },
-      { num: 4, title: "YEPPI YEPPI", duration: "3:33", youtubeVideoId: "vQZ7Vb3bL2o" },
-      { num: 5, title: "ICONIC", duration: "3:11", youtubeVideoId: "k6r5h3V4o2Y" },
-      { num: 6, title: "Lucid Dream", duration: "3:30", youtubeVideoId: "f6a9R1l5J8w" },
-      { num: 7, title: "Black Mamba (Bonus)", duration: "2:54", youtubeVideoId: "ZeerrnuLi5E" },
+      { num: 1, title: "aenergy", duration: "2:27", youtubeVideoId: "O89_etLjQxE" },
+      { num: 2, title: "Savage", duration: "4:19", isTitle: true, youtubeVideoId: "WPdWvnAAurg" },
+      { num: 3, title: "I'll Make You Cry", duration: "3:35", youtubeVideoId: "NBunx0VMvos" },
+      { num: 4, title: "YEPPI YEPPI", duration: "3:34", youtubeVideoId: "syYqQoE5Rbo" },
+      { num: 5, title: "ICONIC", duration: "3:12", youtubeVideoId: "gj-lvvYQdiU" },
+      { num: 6, title: "Lucid Dream", duration: "3:31", youtubeVideoId: "5DhAts7WcPk" },
     ],
   },
   {
@@ -875,7 +877,7 @@ export const aespaDiscography: DiscographyItem[] = [
     appleMusicUrl: "https://music.apple.com/album/next-level-single/1566861219",
     youtubeMusicUrl: "https://music.youtube.com/watch?v=4TWR90KJl84",
     tracklist: [
-      { num: 1, title: "Next Level", duration: "5:06", isTitle: true, youtubeVideoId: "wog1R1d4zls" },
+      { num: 1, title: "Forever", duration: "5:06", isTitle: true, youtubeVideoId: "wog1R1d4zls" },
     ],
   },
   {
@@ -889,7 +891,7 @@ export const aespaDiscography: DiscographyItem[] = [
     appleMusicUrl: "https://music.apple.com/album/black-mamba-single/1539958156",
     youtubeMusicUrl: "https://music.youtube.com/watch?v=ZeerrnuLi5E",
     tracklist: [
-      { num: 1, title: "Black Mamba", duration: "2:54", isTitle: true, youtubeVideoId: "ZeerrnuLi5E" },
+      { num: 1, title: "Black Mamba", duration: "3:50", isTitle: true, youtubeVideoId: "ZeerrnuLi5E" },
     ],
   },
 ];
