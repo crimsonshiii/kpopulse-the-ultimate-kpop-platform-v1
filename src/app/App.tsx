@@ -437,7 +437,7 @@ function LoginScreen({
       {/* Left — brand / concert visual */}
       <div className="hidden md:flex flex-1 relative overflow-hidden">
         <img
-          src={unsplash("1516450360452-9312f5e86fc7", 1000, 1000)}
+          src={unsplash("/asset/seventeen-2.jpg", 1000, 1000)}
           alt="Concert stage"
           className="w-full h-full object-cover"
         />
