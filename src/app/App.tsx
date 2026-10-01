@@ -936,7 +936,11 @@ function Sidebar({
                     className="text-[10px] font-mono font-bold flex-shrink-0"
                     style={{ color: cb.color }}
                   >
-                    {cb.daysLeft}d
+                    {calculateComebackDaysLeft(cb.date) > 0
+                      ? `${calculateComebackDaysLeft(cb.date)}d`
+                      : calculateComebackDaysLeft(cb.date) === 0
+                        ? "Today"
+                        : "Out"}
                   </span>
                 </div>
               ))}
@@ -1135,8 +1139,12 @@ function HomeTab({
               {featured.title}
             </h2>
             <p className="text-white/60 text-sm mt-1.5">
-              {featured.tracks} tracks · {featured.daysLeft}{" "}
-              days away
+              {featured.tracks} tracks ·{" "}
+              {calculateComebackDaysLeft(featured.date) > 0
+                ? `${calculateComebackDaysLeft(featured.date)} days away`
+                : calculateComebackDaysLeft(featured.date) === 0
+                  ? "Out today"
+                  : "Released"}
             </p>
             <div className="flex gap-3 mt-4">
               <button
@@ -2039,10 +2047,14 @@ function ComebacksTab({
 
   const filteredComebacks = COMEBACKS.filter((c) => {
     const finished = isComebackFinished(c);
+    const daysRemaining = calculateComebackDaysLeft(c.date);
     if (filter === "favorites") {
       return followedNames.has(c.artist);
     }
-    return filter === "upcoming" ? !finished : finished;
+    if (filter === "upcoming") {
+      return !finished;
+    }
+    return finished || daysRemaining <= 0;
   });
 
   return (
@@ -2126,6 +2138,10 @@ function ComebacksTab({
                         <span className="text-[10px] font-mono uppercase tracking-wider bg-emerald-500/90 text-white px-2 py-0.5 rounded-full font-bold">
                           Out Now
                         </span>
+                      ) : daysRemaining === 0 ? (
+                        <span className="text-[10px] font-mono uppercase tracking-wider bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold">
+                          Out Today
+                        </span>
                       ) : cb.teaser ? (
                         <span className="text-[10px] font-mono uppercase tracking-wider bg-primary/80 text-white px-2 py-0.5 rounded-full">
                           Teaser Out
@@ -2173,7 +2189,9 @@ function ComebacksTab({
                       >
                         {!isFinished && daysRemaining > 0
                           ? `${daysRemaining}d left`
-                          : "Released"}
+                          : daysRemaining === 0
+                            ? "Out Today"
+                            : "Released"}
                       </span>
                     </div>
                   </div>
